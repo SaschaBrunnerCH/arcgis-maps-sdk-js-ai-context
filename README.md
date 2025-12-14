@@ -94,13 +94,32 @@ The package includes 28 comprehensive Claude skills covering:
 
 ## GitHub Copilot Instructions
 
-The Copilot instructions file provides:
+The package includes 16 comprehensive Copilot instruction files covering all topics:
 
+| File | Coverage |
+|------|----------|
+| arcgis-core-maps.instructions.md | Maps, views, navigation, imports |
+| arcgis-layers.instructions.md | All layer types, queries, management |
+| arcgis-visualization.instructions.md | Renderers, symbols, visual variables, labels |
+| arcgis-widgets-ui.instructions.md | Widgets, Calcite Design System |
+| arcgis-popup-templates.instructions.md | Popup content, charts, expressions |
+| arcgis-geometry.instructions.md | Geometry operators, spatial operations, projection |
+| arcgis-authentication.instructions.md | OAuth, API keys, identity |
+| arcgis-editing.instructions.md | Editor, Sketch, forms, versioning |
+| arcgis-3d.instructions.md | SceneView, 3D layers, weather, lighting, effects |
+| arcgis-arcade.instructions.md | Arcade expressions for all contexts |
+| arcgis-analysis.instructions.md | Analysis tools, measurement, print |
+| arcgis-smart-mapping.instructions.md | Auto-generated renderers, statistics |
+| arcgis-time-animation.instructions.md | TimeSlider, temporal data |
+| arcgis-cim-symbols.instructions.md | Advanced CIM symbology |
+| arcgis-portal-advanced.instructions.md | Portal, imagery, media layers, utility networks, knowledge graphs |
+| arcgis-core-utilities.instructions.md | reactiveUtils, Collection, hit testing, highlighting, events |
+
+Each file provides:
 - Import patterns and best practices
-- Common code patterns for maps, layers, and widgets
-- TypeScript guidance
-- Error handling patterns
-- Quick reference tables
+- Comprehensive code examples
+- TypeScript guidance with `as const`
+- Common pitfalls to avoid
 
 ## Usage with Claude
 
