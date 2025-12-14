@@ -88,10 +88,11 @@ Available versions can be viewed with the `list` command. If no version is speci
 
 ## Claude Skills Included
 
-The package includes 28 comprehensive Claude skills covering:
+The package includes 29 comprehensive Claude skills covering:
 
 | Skill | Description |
 |-------|-------------|
+| arcgis-starter-app | Scaffold minimal TypeScript/Vite app with Map Components |
 | arcgis-core-maps | 2D and 3D map creation, views, navigation |
 | arcgis-layers | FeatureLayer, TileLayer, GeoJSONLayer, and more |
 | arcgis-visualization | Renderers, symbols, and visual variables |
@@ -123,10 +124,11 @@ The package includes 28 comprehensive Claude skills covering:
 
 ## GitHub Copilot Instructions
 
-The package includes 16 comprehensive Copilot instruction files covering all topics:
+The package includes 17 comprehensive Copilot instruction files covering all topics:
 
 | File | Coverage |
 |------|----------|
+| arcgis-starter-app.instructions.md | Scaffold TypeScript/Vite app with Map Components |
 | arcgis-core-maps.instructions.md | Maps, views, navigation, imports |
 | arcgis-layers.instructions.md | All layer types, queries, management |
 | arcgis-visualization.instructions.md | Renderers, symbols, visual variables, labels |
