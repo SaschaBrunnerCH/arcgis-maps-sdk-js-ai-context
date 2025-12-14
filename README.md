@@ -8,6 +8,7 @@ Install AI assistant context files for [ArcGIS Maps SDK for JavaScript](https://
 
 - **Claude Skills**: Comprehensive skill files for Claude AI assistant covering all major ArcGIS Maps SDK features
 - **GitHub Copilot Instructions**: Context files for GitHub Copilot to improve code suggestions
+- **SDK Version Selection**: Choose context files for specific ArcGIS Maps SDK versions
 - **Cross-platform**: Works on Windows, macOS, and Linux
 - **Zero dependencies**: Uses only built-in Node.js modules
 
@@ -26,7 +27,11 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context <command>
 Installs Claude skill files to `.claude/skills/arcgis-maps-sdk-js/` in your project:
 
 ```bash
+# Install for latest SDK version
 npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude
+
+# Install for specific SDK version
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude --sdk 4.34
 ```
 
 ### Install GitHub Copilot Instructions
@@ -34,7 +39,11 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude
 Installs Copilot instruction files to `.github/instructions/` in your project:
 
 ```bash
+# Install for latest SDK version
 npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context copilot
+
+# Install for specific SDK version
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context copilot --sdk 4.34
 ```
 
 ### Install All
@@ -42,12 +51,16 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context copilot
 Installs both Claude skills and Copilot instructions:
 
 ```bash
+# Install for latest SDK version
 npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context all
+
+# Install for specific SDK version
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context all --sdk 4.34
 ```
 
 ### List Available Contexts
 
-Shows all available context files included in the package:
+Shows all available SDK versions and context files:
 
 ```bash
 npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context list
@@ -58,6 +71,20 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context list
 ```bash
 npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context --help
 ```
+
+## SDK Version Selection
+
+Use the `--sdk` flag to install context files for a specific ArcGIS Maps SDK version:
+
+```bash
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude --sdk 4.34
+```
+
+Available versions can be viewed with the `list` command. If no version is specified, the latest available version is used.
+
+| SDK Version | Status |
+|-------------|--------|
+| 4.34 | Available |
 
 ## Claude Skills Included
 
