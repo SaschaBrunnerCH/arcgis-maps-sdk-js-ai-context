@@ -1,5 +1,7 @@
 # arcgis-maps-sdk-js-ai-context
 
+> **DISCLAIMER:** This is work in progress and not yet tested extensively. Use at your own risk.
+
 Install AI assistant context files for [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/) development. Supports Claude skills and GitHub Copilot instructions.
 
 ## Features
@@ -143,6 +145,17 @@ After installing Copilot instructions, GitHub Copilot will provide better sugges
 ## Requirements
 
 - Node.js 14.0.0 or higher
+
+## Source
+
+The context files in this package are based on the official ArcGIS Maps SDK for JavaScript documentation:
+
+- **Documentation:** https://developers.arcgis.com/javascript/latest/downloads/
+- **Folders used:** `api-reference` and `sample-code`
+
+## AI Assistance Declaration
+
+This project was primarily developed using AI coding assistants. The maintainer directed the development through prompts and reviewed all generated code.
 
 ## License
 
