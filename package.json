@@ -1,0 +1,45 @@
+{
+  "name": "arcgis-maps-sdk-js-ai-context",
+  "version": "1.0.0",
+  "description": "Install AI assistant context files for ArcGIS Maps SDK for JavaScript development. Supports Claude skills and GitHub Copilot instructions.",
+  "main": "lib/installer.js",
+  "bin": {
+    "arcgis-maps-sdk-js-ai-context": "bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "contexts",
+    "lib"
+  ],
+  "scripts": {
+    "test": "node bin/cli.js --help"
+  },
+  "keywords": [
+    "arcgis",
+    "esri",
+    "gis",
+    "claude",
+    "copilot",
+    "ai",
+    "skills",
+    "maps",
+    "javascript",
+    "context",
+    "assistant",
+    "github-copilot",
+    "anthropic"
+  ],
+  "author": "Sascha Brunner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context/issues"
+  },
+  "homepage": "https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
