@@ -9,7 +9,7 @@ const pkg = require('../package.json');
 const COMMANDS = {
   claude: 'Install Claude skills to .claude/skills/arcgis-maps-sdk-js/',
   copilot: 'Install GitHub Copilot instructions to .github/instructions/',
-  all: 'Install all AI context files',
+  all: 'Install both Claude skills and Copilot instructions (latest SDK version)',
   list: 'Show available contexts and SDK versions',
 };
 
