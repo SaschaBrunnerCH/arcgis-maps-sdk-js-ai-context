@@ -1,5 +1,5 @@
 {
-  "name": "arcgis-maps-sdk-js-ai-context",
+  "name": "@saschabrunnerch/arcgis-maps-sdk-js-ai-context",
   "version": "0.0.1",
   "description": "Install AI assistant context files for ArcGIS Maps SDK for JavaScript development. Supports Claude skills and GitHub Copilot instructions.",
   "main": "lib/installer.js",

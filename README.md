@@ -16,7 +16,7 @@ Install AI assistant context files for [ArcGIS Maps SDK for JavaScript](https://
 No installation required! Run directly with npx:
 
 ```bash
-npx arcgis-maps-sdk-js-ai-context <command>
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context <command>
 ```
 
 ## Commands
@@ -26,7 +26,7 @@ npx arcgis-maps-sdk-js-ai-context <command>
 Installs Claude skill files to `.claude/skills/arcgis-maps-sdk-js/` in your project:
 
 ```bash
-npx arcgis-maps-sdk-js-ai-context claude
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude
 ```
 
 ### Install GitHub Copilot Instructions
@@ -34,7 +34,7 @@ npx arcgis-maps-sdk-js-ai-context claude
 Installs Copilot instruction files to `.github/instructions/` in your project:
 
 ```bash
-npx arcgis-maps-sdk-js-ai-context copilot
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context copilot
 ```
 
 ### Install All
@@ -42,7 +42,7 @@ npx arcgis-maps-sdk-js-ai-context copilot
 Installs both Claude skills and Copilot instructions:
 
 ```bash
-npx arcgis-maps-sdk-js-ai-context all
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context all
 ```
 
 ### List Available Contexts
@@ -50,13 +50,13 @@ npx arcgis-maps-sdk-js-ai-context all
 Shows all available context files included in the package:
 
 ```bash
-npx arcgis-maps-sdk-js-ai-context list
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context list
 ```
 
 ### Help
 
 ```bash
-npx arcgis-maps-sdk-js-ai-context --help
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context --help
 ```
 
 ## Claude Skills Included
