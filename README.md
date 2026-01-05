@@ -24,7 +24,7 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context <command>
 
 ### Install Agent Skills
 
-Installs Agent Skills to `.github/skills/` in your project:
+Installs 30 Agent Skills directly to `.github/skills/` in your project:
 
 ```bash
 # Install for latest SDK version
@@ -32,6 +32,21 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills
 
 # Install for specific SDK version
 npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills --sdk 4.34
+```
+
+This creates the following structure (all skills are prefixed with `arcgis-` to avoid conflicts with other packages):
+
+```
+your-project/
+└── .github/
+    └── skills/
+        ├── arcgis-core-maps/
+        │   └── SKILL.md
+        ├── arcgis-layers/
+        │   └── SKILL.md
+        ├── arcgis-visualization/
+        │   └── SKILL.md
+        └── ... (30 skill directories total)
 ```
 
 ### List Available Skills
