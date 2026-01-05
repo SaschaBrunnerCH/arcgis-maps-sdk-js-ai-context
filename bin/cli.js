@@ -2,14 +2,13 @@
 
 const path = require('path');
 const fs = require('fs');
-const { installClaude, installAll, listContexts, getAvailableVersions, colors, colorize, log } = require('../lib/installer');
+const { installSkills, listContexts, getAvailableVersions, colors, colorize, log } = require('../lib/installer');
 
 const pkg = require('../package.json');
 
 const COMMANDS = {
-  claude: 'Install Claude skills to .claude/skills/arcgis-maps-sdk-js/',
-  all: 'Install all AI context files (latest SDK version)',
-  list: 'Show available contexts and SDK versions',
+  skills: 'Install Agent Skills to .github/skills/',
+  list: 'Show available skills and SDK versions',
 };
 
 function showBanner() {
@@ -44,16 +43,13 @@ function showHelp() {
   log('');
 
   log(colorize('bold', 'EXAMPLES'));
-  log(colorize('dim', '  # Install Claude skills (latest SDK version)'));
-  log(`  npx ${pkg.name} claude`);
+  log(colorize('dim', '  # Install Agent Skills (latest SDK version)'));
+  log(`  npx ${pkg.name} skills`);
   log('');
-  log(colorize('dim', '  # Install Claude skills for specific SDK version'));
-  log(`  npx ${pkg.name} claude --sdk 4.34`);
+  log(colorize('dim', '  # Install Agent Skills for specific SDK version'));
+  log(`  npx ${pkg.name} skills --sdk 4.34`);
   log('');
-  log(colorize('dim', '  # Install everything'));
-  log(`  npx ${pkg.name} all`);
-  log('');
-  log(colorize('dim', '  # List available contexts and versions'));
+  log(colorize('dim', '  # List available skills and versions'));
   log(`  npx ${pkg.name} list`);
   log('');
 
@@ -138,12 +134,8 @@ function main() {
   let success = false;
 
   switch (command.toLowerCase()) {
-    case 'claude':
-      success = installClaude(process.cwd(), sdkVersion);
-      break;
-
-    case 'all':
-      success = installAll(process.cwd(), sdkVersion);
+    case 'skills':
+      success = installSkills(process.cwd(), sdkVersion);
       break;
 
     case 'list':

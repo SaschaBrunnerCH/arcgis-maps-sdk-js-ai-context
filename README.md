@@ -2,12 +2,13 @@
 
 > **DISCLAIMER:** This is work in progress and not yet tested extensively. Use at your own risk.
 
-Install AI assistant context files for [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/) development. Supports Claude skills.
+Install [Agent Skills](https://agentskills.io) for [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/) development. Compatible with Claude, VS Code, Cursor, and other AI agents.
 
 ## Features
 
-- **Claude Skills**: Comprehensive skill files for Claude AI assistant covering all major ArcGIS Maps SDK features
-- **SDK Version Selection**: Choose context files for specific ArcGIS Maps SDK versions
+- **Agent Skills**: Comprehensive skill files following the open [Agent Skills specification](https://agentskills.io/specification)
+- **Cross-platform AI support**: Works with Claude, VS Code Copilot, Cursor, OpenCode, and other compatible agents
+- **SDK Version Selection**: Choose skills for specific ArcGIS Maps SDK versions
 - **Cross-platform**: Works on Windows, macOS, and Linux
 - **Zero dependencies**: Uses only built-in Node.js modules
 
@@ -21,33 +22,21 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context <command>
 
 ## Commands
 
-### Install Claude Skills
+### Install Agent Skills
 
-Installs Claude skill files to `.claude/skills/arcgis-maps-sdk-js/` in your project:
-
-```bash
-# Install for latest SDK version
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude
-
-# Install for specific SDK version
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude --sdk 4.34
-```
-
-### Install All
-
-Installs all AI context files:
+Installs Agent Skills to `.github/skills/` in your project:
 
 ```bash
 # Install for latest SDK version
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context all
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills
 
 # Install for specific SDK version
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context all --sdk 4.34
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills --sdk 4.34
 ```
 
-### List Available Contexts
+### List Available Skills
 
-Shows all available SDK versions and context files:
+Shows all available SDK versions and skills:
 
 ```bash
 npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context list
@@ -61,10 +50,10 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context --help
 
 ## SDK Version Selection
 
-Use the `--sdk` flag to install context files for a specific ArcGIS Maps SDK version:
+Use the `--sdk` flag to install skills for a specific ArcGIS Maps SDK version:
 
 ```bash
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context claude --sdk 4.34
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills --sdk 4.34
 ```
 
 Available versions can be viewed with the `list` command. If no version is specified, the latest available version is used.
@@ -73,13 +62,14 @@ Available versions can be viewed with the `list` command. If no version is speci
 |-------------|--------|
 | 4.34 | Available |
 
-## Claude Skills Included
+## Skills Included
 
-The package includes 29 comprehensive Claude skills covering:
+The package includes 30 comprehensive Agent Skills covering:
 
 | Skill | Description |
 |-------|-------------|
 | arcgis-starter-app | Scaffold minimal TypeScript/Vite app with Map Components |
+| arcgis-starter-app-extended | Extended starter app with additional features |
 | arcgis-core-maps | 2D and 3D map creation, views, navigation |
 | arcgis-layers | FeatureLayer, TileLayer, GeoJSONLayer, and more |
 | arcgis-visualization | Renderers, symbols, and visual variables |
@@ -109,14 +99,22 @@ The package includes 29 comprehensive Claude skills covering:
 | arcgis-utility-networks | Utility network analysis |
 | arcgis-core-utilities | Core utilities and helpers |
 
-## Usage with Claude
+## Usage
 
-After installing Claude skills, Claude will automatically have access to ArcGIS-specific knowledge when working in your project. The skills provide:
+After installing skills, your AI agent will automatically have access to ArcGIS-specific knowledge when working in your project. The skills provide:
 
 - Correct import patterns for ESM and CDN usage
 - Best practices for TypeScript with autocasting
 - Code examples for common tasks
 - API reference guidance
+
+### Supported AI Agents
+
+- [Claude](https://claude.ai/) / [Claude Code](https://claude.ai/claude-code)
+- [VS Code with Copilot](https://code.visualstudio.com/)
+- [Cursor](https://cursor.com/)
+- [OpenCode](https://opencode.ai/)
+- Any agent supporting the [Agent Skills specification](https://agentskills.io)
 
 ## Requirements
 
@@ -124,7 +122,7 @@ After installing Claude skills, Claude will automatically have access to ArcGIS-
 
 ## Source
 
-The context files in this package are based on the official ArcGIS Maps SDK for JavaScript documentation:
+The skills in this package are based on the official ArcGIS Maps SDK for JavaScript documentation:
 
 - **Documentation:** https://developers.arcgis.com/javascript/latest/downloads/
 - **Folders used:** `api-reference` and `sample-code`
@@ -146,4 +144,5 @@ https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context
 ## Related
 
 - [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/)
+- [Agent Skills Specification](https://agentskills.io)
 - [Claude](https://claude.ai/)
