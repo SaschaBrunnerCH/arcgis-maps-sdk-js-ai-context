@@ -2,14 +2,13 @@
 
 const path = require('path');
 const fs = require('fs');
-const { installClaude, installCopilot, installAll, listContexts, getAvailableVersions, colors, colorize, log } = require('../lib/installer');
+const { installClaude, installAll, listContexts, getAvailableVersions, colors, colorize, log } = require('../lib/installer');
 
 const pkg = require('../package.json');
 
 const COMMANDS = {
   claude: 'Install Claude skills to .claude/skills/arcgis-maps-sdk-js/',
-  copilot: 'Install GitHub Copilot instructions to .github/instructions/',
-  all: 'Install both Claude skills and Copilot instructions (latest SDK version)',
+  all: 'Install all AI context files (latest SDK version)',
   list: 'Show available contexts and SDK versions',
 };
 
@@ -50,9 +49,6 @@ function showHelp() {
   log('');
   log(colorize('dim', '  # Install Claude skills for specific SDK version'));
   log(`  npx ${pkg.name} claude --sdk 4.34`);
-  log('');
-  log(colorize('dim', '  # Install GitHub Copilot instructions'));
-  log(`  npx ${pkg.name} copilot --sdk 4.34`);
   log('');
   log(colorize('dim', '  # Install everything'));
   log(`  npx ${pkg.name} all`);
@@ -144,10 +140,6 @@ function main() {
   switch (command.toLowerCase()) {
     case 'claude':
       success = installClaude(process.cwd(), sdkVersion);
-      break;
-
-    case 'copilot':
-      success = installCopilot(process.cwd(), sdkVersion);
       break;
 
     case 'all':

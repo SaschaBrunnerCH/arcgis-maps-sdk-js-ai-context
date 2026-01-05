@@ -1,7 +1,7 @@
 {
   "name": "@saschabrunnerch/arcgis-maps-sdk-js-ai-context",
   "version": "0.0.2",
-  "description": "Install AI assistant context files for ArcGIS Maps SDK for JavaScript development. Supports Claude skills and GitHub Copilot instructions.",
+  "description": "Install AI assistant context files for ArcGIS Maps SDK for JavaScript development. Supports Claude skills.",
   "main": "lib/installer.js",
   "bin": {
     "arcgis-maps-sdk-js-ai-context": "bin/cli.js"
@@ -19,14 +19,12 @@
     "esri",
     "gis",
     "claude",
-    "copilot",
     "ai",
     "skills",
     "maps",
     "javascript",
     "context",
     "assistant",
-    "github-copilot",
     "anthropic"
   ],
   "author": "Sascha Brunner",
