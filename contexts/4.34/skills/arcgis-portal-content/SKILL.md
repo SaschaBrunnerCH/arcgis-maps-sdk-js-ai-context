@@ -419,7 +419,6 @@ import Bookmarks from "@arcgis/core/widgets/Bookmarks.js";
 
 const bookmarks = new Bookmarks({
   view: view,
-  editingEnabled: true,
   visibleElements: {
     addBookmarkButton: true,
     editBookmarkButton: true,
@@ -588,11 +587,14 @@ await item.update();
 
 ### Share Portal Item
 ```javascript
-await item.shareWith({
-  everyone: false,
-  org: true,
-  groups: ["GROUP_ID_1", "GROUP_ID_2"]
-});
+// Use the Portal sharing API
+import Portal from "@arcgis/core/portal/Portal.js";
+
+const portal = new Portal({ authMode: "immediate" });
+await portal.load();
+
+// Share via PortalSharingResource or REST API
+// Access sharing is managed through the portal sharing endpoint
 ```
 
 ## Portal Groups
@@ -664,6 +666,14 @@ content.results.forEach(item => {
 </body>
 </html>
 ```
+
+## Reference Samples
+
+- `webmap-save` - Saving a WebMap to portal
+- `webscene-save` - Saving a WebScene to portal
+- `bookmarks` - Working with map bookmarks
+- `webscene-slides` - Managing WebScene slides
+- `layers-portal` - Loading layers from portal items
 
 ## Common Pitfalls
 

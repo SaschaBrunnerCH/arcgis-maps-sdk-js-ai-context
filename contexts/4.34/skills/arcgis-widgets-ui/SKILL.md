@@ -23,21 +23,31 @@ Use this skill when building user interfaces with widgets, Map Components, and C
 | `arcgis-locate` | Find user location |
 | `arcgis-track` | Track user location |
 | `arcgis-navigation-toggle` | Pan/rotate mode (3D) |
+| `arcgis-floor-filter` | Filter indoor map by floor level |
 | `arcgis-fullscreen` | Toggle fullscreen |
+| `arcgis-grid-controls` | Grid controls for feature tables |
 | `arcgis-scale-bar` | Display map scale |
+| `arcgis-scale-range-slider` | Set visible scale range for layers |
 | `arcgis-legend` | Layer symbology legend |
 | `arcgis-layer-list` | Layer visibility control |
 | `arcgis-basemap-gallery` | Switch basemaps |
+| `arcgis-basemap-layer-list` | Layer list for basemap layers |
 | `arcgis-basemap-toggle` | Toggle two basemaps |
+| `arcgis-catalog-layer-list` | Browse and toggle CatalogLayer sublayers |
 | `arcgis-search` | Location search |
+| `arcgis-placement` | Control widget placement on the view |
 | `arcgis-popup` | Feature popups |
 | `arcgis-editor` | Feature editing |
+| `arcgis-feature` | Display feature information without a popup |
+| `arcgis-feature-form` | Form-based attribute editing |
+| `arcgis-features` | Display multiple features information |
 | `arcgis-sketch` | Draw geometries |
 | `arcgis-feature-table` | Tabular data view |
 | `arcgis-time-slider` | Temporal navigation |
 | `arcgis-time-zone-label` | Display time zone |
 | `arcgis-expand` | Collapsible container |
 | `arcgis-print` | Map printing |
+| `arcgis-table-list` | List and manage feature tables |
 | `arcgis-bookmarks` | Navigate to bookmarks |
 | `arcgis-directions` | Turn-by-turn routing |
 | `arcgis-swipe` | Compare layers |
@@ -51,7 +61,7 @@ Use this skill when building user interfaces with widgets, Map Components, and C
 | `arcgis-utility-network-trace` | Utility network tracing |
 | `arcgis-utility-network-associations` | Utility associations |
 
-> **Note:** Not all widgets have component equivalents yet. FeatureForm, Histogram, and some specialized widgets only have Core API versions.
+> **Note:** Not all widgets have component equivalents yet. Histogram and some specialized widgets only have Core API versions. FeatureForm has the `arcgis-feature-form` component.
 
 ### Slot-Based Positioning
 
@@ -73,7 +83,7 @@ Use this skill when building user interfaces with widgets, Map Components, and C
 </arcgis-map>
 ```
 
-Available slots: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `popup`, `manual`
+Available slots: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `top-start`, `top-end`, `bottom-start`, `bottom-end`, `popup`
 
 ### Expand Component
 
@@ -276,15 +286,17 @@ const featureTable = new FeatureTable({
     columnMenus: true,
     selectionColumn: true
   },
-  fieldConfigs: [
-    { name: "name", label: "Name" },
-    { name: "population", label: "Population" }
-  ]
+  tableTemplate: {
+    columnTemplates: [
+      { fieldName: "name", label: "Name" },
+      { fieldName: "population", label: "Population" }
+    ]
+  }
 });
 
-// Selection events
-featureTable.on("selection-change", (event) => {
-  console.log("Selected rows:", event.added);
+// Watch selection via highlightIds
+featureTable.highlightIds.on("change", (event) => {
+  console.log("Selected IDs:", featureTable.highlightIds.toArray());
 });
 ```
 
@@ -524,7 +536,7 @@ timeSlider.watch("timeExtent", (value) => {
 });
 
 // FeatureTable selection
-featureTable.on("selection-change", (event) => {
+featureTable.highlightIds.on("change", (event) => {
   console.log(event.added, event.removed);
 });
 ```
@@ -551,14 +563,24 @@ const layerList = new LayerList({
 const featureTable = new FeatureTable({
   view: view,
   layer: featureLayer,
-  fieldConfigs: [
-    { name: "name", label: "Name" },
-    { name: "population", label: "Population" }
-  ]
+  tableTemplate: {
+    columnTemplates: [
+      { fieldName: "name", label: "Name" },
+      { fieldName: "population", label: "Population" }
+    ]
+  }
 });
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `legend` - Legend widget for layer symbology
+- `widgets-layerlist` - LayerList widget for layer management
+- `widgets-search-multiplesource` - Search widget with multiple sources
+- `widgets-featuretable` - FeatureTable widget integration
+- `basemap-gallery` - BasemapGallery for switching basemaps
 
 ## Common Pitfalls
 

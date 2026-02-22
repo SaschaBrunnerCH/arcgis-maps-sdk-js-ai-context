@@ -140,7 +140,7 @@ const areaWidget = new AreaMeasurement3D({
 
 ### Identify on MapImageLayer
 ```javascript
-import identify from "@arcgis/core/rest/identify.js";
+import * as identify from "@arcgis/core/rest/identify.js";
 import IdentifyParameters from "@arcgis/core/rest/support/IdentifyParameters.js";
 
 const identifyURL = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/MtBaldy_BaseMap/MapServer";
@@ -188,7 +188,7 @@ view.on("click", async (event) => {
 
 ### Basic Route
 ```javascript
-import route from "@arcgis/core/rest/route.js";
+import * as route from "@arcgis/core/rest/route.js";
 import RouteParameters from "@arcgis/core/rest/support/RouteParameters.js";
 import FeatureSet from "@arcgis/core/rest/support/FeatureSet.js";
 import Graphic from "@arcgis/core/Graphic.js";
@@ -289,7 +289,7 @@ view.ui.add(directions, "top-right");
 
 ### Print Service
 ```javascript
-import print from "@arcgis/core/rest/print.js";
+import * as print from "@arcgis/core/rest/print.js";
 import PrintTemplate from "@arcgis/core/rest/support/PrintTemplate.js";
 import PrintParameters from "@arcgis/core/rest/support/PrintParameters.js";
 
@@ -365,23 +365,6 @@ const template = new PrintTemplate({
 | `eps` | Encapsulated PostScript |
 | `svg` | Scalable Vector Graphics |
 | `svgz` | Compressed SVG |
-
-### Print Layouts
-
-```javascript
-// Get available layouts from print service
-const printInfo = await print.getInfo(printUrl);
-
-console.log("Available layouts:");
-printInfo.layouts.forEach(layout => {
-  console.log(`- ${layout.name}`);
-});
-
-console.log("Available formats:");
-printInfo.formats.forEach(format => {
-  console.log(`- ${format}`);
-});
-```
 
 ### Map-Only Export (No Layout)
 
@@ -480,24 +463,18 @@ const print = new Print({
 });
 ```
 
-### Print Widget Events
+### Print Widget State
 
 ```javascript
-// Listen for print completion
-print.viewModel.on("complete", (event) => {
-  console.log("Print complete:", event.url);
-  window.open(event.url, "_blank");
-});
+// Track print widget state
+import reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 
-// Listen for errors
-print.viewModel.on("error", (event) => {
-  console.error("Print error:", event.error);
-});
-
-// Track progress
-print.viewModel.watch("state", (state) => {
-  console.log("Print state:", state);  // ready, printing, complete, error
-});
+reactiveUtils.watch(
+  () => printWidget.viewModel.state,
+  (state) => {
+    console.log("Print state:", state);  // ready, printing, complete, error
+  }
+);
 ```
 
 ### Custom Print Workflow
@@ -591,7 +568,7 @@ link.click();
 
 ### Find Service
 ```javascript
-import find from "@arcgis/core/rest/find.js";
+import * as find from "@arcgis/core/rest/find.js";
 import FindParameters from "@arcgis/core/rest/support/FindParameters.js";
 
 const findUrl = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer";
@@ -639,7 +616,7 @@ result.results.forEach(r => {
     const viewElement = document.querySelector("arcgis-map");
     await viewElement.viewOnReady();
 
-    const measurement = new Measurement({ view: viewElement });
+    const measurement = new Measurement({ view: viewElement.view });
     viewElement.ui.add(measurement, "bottom-right");
 
     document.getElementById("measureBtn").onclick = () => {
@@ -653,6 +630,14 @@ result.results.forEach(r => {
 </body>
 </html>
 ```
+
+## Reference Samples
+
+- `widgets-measurement` - Distance and area measurement tools
+- `widgets-print` - Print widget for map export
+- `widgets-directions` - Directions widget for routing
+- `swipe` - Swipe widget for comparing layers
+- `identify` - Identify features on the map
 
 ## Common Pitfalls
 

@@ -842,6 +842,14 @@ layer.popupTemplate = {
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
 
+## Reference Samples
+
+- `intro-popuptemplate` - Basic PopupTemplate configuration
+- `popup-actions` - Adding custom actions to popups
+- `popup-customcontent` - Custom popup content elements
+- `popuptemplate-arcade` - Using Arcade expressions in popups
+- `popup-multipleelements` - Multiple content elements in popups
+
 ## Common Pitfalls
 
 1. **Field Names Case Sensitive**: Field names must match exactly

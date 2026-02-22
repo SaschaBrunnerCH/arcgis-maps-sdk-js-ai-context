@@ -1,9 +1,9 @@
 ---
-name: arcgis-scene-effects
+name: arcgis-scene-environment
 description: Configure SceneView environment settings including shadows, lighting, backgrounds, underground navigation, and elevation modes. Use for realistic 3D visualizations.
 ---
 
-# ArcGIS Scene Effects
+# ArcGIS Scene Environment
 
 Use this skill for configuring SceneView environment, shadows, backgrounds, underground navigation, and elevation settings.
 
@@ -495,6 +495,14 @@ view.environment = {
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `scene-shadow` - Shadow casting in 3D scenes
+- `scene-underground` - Underground navigation and visualization
+- `scene-environment` - Scene environment settings and atmosphere
+- `sceneview-screenshot` - Capturing SceneView screenshots
+- `focus-area` - Setting focus areas in SceneView
 
 ## Common Pitfalls
 

@@ -310,8 +310,7 @@ const timeInfo = {
   interval: {                         // Suggested animation interval
     value: 1,
     unit: "months"
-  },
-  useTime: true                       // Enable time filtering
+  }
 };
 ```
 
@@ -374,12 +373,7 @@ const timeSlider = new TimeSlider({
   view: view
 });
 
-// Initialize from layer's time info
-TimeSlider.getPropertiesFromWebMap(webMap).then((properties) => {
-  timeSlider.set(properties);
-});
-
-// Or manually from layer
+// Manually configure from layer
 if (featureLayer.timeInfo) {
   timeSlider.fullTimeExtent = featureLayer.timeInfo.fullTimeExtent;
   timeSlider.stops = {
@@ -678,6 +672,13 @@ layer.timeInfo = {
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `timeslider` - Basic TimeSlider widget usage
+- `timeslider-filter` - Filtering data with TimeSlider
+- `timeslider-component-filter` - TimeSlider component with filtering
+- `time-layer` - Working with time-aware layers
 
 ## Common Pitfalls
 

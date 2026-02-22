@@ -183,12 +183,6 @@ linkChartView.on("click", async (event) => {
     console.log("Clicked:", graphic.attributes);
   }
 });
-
-// Watch for selection changes
-linkChartView.on("selection-change", (event) => {
-  console.log("Selected entities:", event.added);
-  console.log("Deselected entities:", event.removed);
-});
 ```
 
 ### Link Chart Component
@@ -219,40 +213,19 @@ linkChartView.on("selection-change", (event) => {
 // Access layout settings
 const layoutSettings = linkChart.layoutSettings;
 
-// Organic Layout (default)
-linkChart.layoutSettings = {
-  type: "organic",
-  avoidLabelOverlap: true,
-  compactness: 0.5,        // 0-1, how tightly packed
-  orientation: "top-to-bottom"  // top-to-bottom, bottom-to-top, left-to-right, right-to-left
-};
-
-// Chronological Layout
-linkChart.layoutSettings = {
-  type: "chronological",
-  dateField: "timestamp",
-  groupByField: "category",
-  orientation: "horizontal",  // horizontal, vertical
-  showTimeline: true
-};
+// Set an OrganicLayoutSettings or ChronologicalLayoutSettings instance
+linkChart.layoutSettings = organicLayout;
 ```
 
 ### OrganicLayoutSettings
 
 ```javascript
-import OrganicLayoutSettings from "@arcgis/core/webdoc/applicationProperties/OrganicLayoutSettings.js";
+import OrganicLayoutSettings from "@arcgis/core/linkCharts/OrganicLayoutSettings.js";
 
-const organicLayout = new OrganicLayoutSettings({
-  avoidLabelOverlap: true,
-  compactness: 0.6,
-  componentLayoutEnabled: true,
-  deterministic: true,
-  minimumNodeDistance: 50,
-  orientation: "top-to-bottom",
-  preferredEdgeLength: 100,
-  starSubstructureEnabled: true,
-  treeSubstructureEnabled: true
-});
+// Real properties include: absoluteIdealEdgeLength, autoRepulsionRadius,
+// computationBudgetTime, among others. Refer to the API documentation
+// for the full list of supported properties.
+const organicLayout = new OrganicLayoutSettings();
 
 linkChart.layoutSettings = organicLayout;
 ```
@@ -260,16 +233,12 @@ linkChart.layoutSettings = organicLayout;
 ### ChronologicalLayoutSettings
 
 ```javascript
-import ChronologicalLayoutSettings from "@arcgis/core/webdoc/applicationProperties/ChronologicalLayoutSettings.js";
+import ChronologicalLayoutSettings from "@arcgis/core/linkCharts/ChronologicalLayoutSettings.js";
 
-const chronoLayout = new ChronologicalLayoutSettings({
-  dateField: "event_date",
-  groupByField: "event_type",
-  orientation: "horizontal",
-  showTimeline: true,
-  timelinePosition: "bottom",
-  sortOrder: "ascending"  // ascending, descending
-});
+// Real properties include: durationLineWidth, timeBannerUTCOffsetInMinutes,
+// among others. Refer to the API documentation for the full list of
+// supported properties.
+const chronoLayout = new ChronologicalLayoutSettings();
 
 linkChart.layoutSettings = chronoLayout;
 ```
@@ -277,61 +246,13 @@ linkChart.layoutSettings = chronoLayout;
 ### LinkChartLayoutSwitcher Widget
 
 ```javascript
-import LinkChartLayoutSwitcher from "@arcgis/core/widgets/LinkChartLayoutSwitcher.js";
+import LinkChartLayoutSwitcher from "@arcgis/core/linkCharts/LinkChartLayoutSwitcher.js";
 
 const layoutSwitcher = new LinkChartLayoutSwitcher({
-  view: linkChartView,
-  layouts: [
-    {
-      name: "Organic",
-      settings: new OrganicLayoutSettings({ compactness: 0.5 })
-    },
-    {
-      name: "Timeline",
-      settings: new ChronologicalLayoutSettings({ dateField: "date" })
-    }
-  ]
+  view: linkChartView
 });
 
 linkChartView.ui.add(layoutSwitcher, "top-right");
-```
-
-### Non-Spatial Data Display
-
-```javascript
-// Configure non-spatial display for entities
-const linkChartLayer = new LinkChartLayer({
-  url: "...",
-  nonspatialDataDisplay: {
-    entityTypes: {
-      Person: {
-        displayField: "name",
-        symbol: {
-          type: "simple-marker",
-          color: "blue",
-          size: 20
-        }
-      },
-      Company: {
-        displayField: "company_name",
-        symbol: {
-          type: "simple-marker",
-          color: "green",
-          size: 25
-        }
-      }
-    },
-    relationshipTypes: {
-      WORKS_AT: {
-        symbol: {
-          type: "simple-line",
-          color: "gray",
-          width: 2
-        }
-      }
-    }
-  }
-});
 ```
 
 ### Adding and Removing Records
@@ -348,14 +269,6 @@ await linkChart.addRecords([
 await linkChart.removeRecords([
   { id: "person-1", typeName: "Person" }
 ]);
-
-// Clear all records
-await linkChart.removeAllRecords();
-
-// Get current records
-const records = linkChart.records;
-console.log("Current entities:", records.entities);
-console.log("Current relationships:", records.relationships);
 ```
 
 ### Update Link Chart from Query Results
@@ -382,7 +295,7 @@ async function updateLinkChart(queryResults, linkChart) {
 }
 ```
 
-### Expand/Collapse Entities
+### Expand Entities
 
 ```javascript
 // Expand entity to show connections
@@ -392,34 +305,11 @@ await linkChart.expand({
   relationshipTypes: ["KNOWS", "WORKS_AT"],
   direction: "both"  // outgoing, incoming, both
 });
-
-// Collapse entity
-await linkChart.collapse({
-  ids: ["entity-id"],
-  typeName: "Person"
-});
 ```
 
-### Selection and Highlighting
+### Navigate to Entities
 
 ```javascript
-// Select entities programmatically
-linkChartView.select([
-  { id: "person-1", typeName: "Person" },
-  { id: "person-2", typeName: "Person" }
-]);
-
-// Clear selection
-linkChartView.clearSelection();
-
-// Highlight (temporary visual emphasis)
-const highlightHandle = linkChartView.highlight([
-  { id: "person-1", typeName: "Person" }
-]);
-
-// Remove highlight
-highlightHandle.remove();
-
 // Go to specific entities
 linkChartView.goTo([
   { id: "person-1", typeName: "Person" }
@@ -439,15 +329,7 @@ const webLinkChart = new WebLinkChart({
   layers: [linkChartLayer],
 
   // Layout settings
-  layoutSettings: organicLayout,
-
-  // Initial records
-  initialRecords: {
-    entities: [
-      { id: "entity-1", typeName: "Person" }
-    ],
-    relationships: []
-  }
+  layoutSettings: organicLayout
 });
 
 // Save to portal
@@ -569,6 +451,19 @@ MATCH (loc:Location)
 WHERE esri.graph.ST_Intersects($geometry, loc.shape)
 RETURN loc
 ```
+
+### Knowledge Graph Components
+
+| Component | Purpose |
+|-----------|---------|
+| `arcgis-link-chart-layout-switcher` | Switch layout algorithms for link charts |
+
+## Reference Samples
+
+- `knowledgegraph-query` - Querying knowledge graphs
+- `knowledgegraph-knowledgegraphlayer` - Using KnowledgeGraphLayer
+- `knowledgegraph-search` - Searching knowledge graph entities
+- `linkchart` - Link chart visualization of graph data
 
 ## Common Pitfalls
 

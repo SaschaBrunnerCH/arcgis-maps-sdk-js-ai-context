@@ -153,7 +153,7 @@ const geojsonLayer = new GeoJSONLayer({
       ]
     }]
   },
-  orderBy: { field: "mag" } // Draw smaller on top
+  orderBy: [{ field: "mag" }] // Draw smaller on top
 });
 
 map.add(geojsonLayer);
@@ -263,34 +263,7 @@ const pcLayer = new PointCloudLayer({
 
 ## Specialized Layers
 
-### WMSLayer
-```javascript
-import WMSLayer from "@arcgis/core/layers/WMSLayer.js";
-
-const wmsLayer = new WMSLayer({
-  url: "https://example.com/wms",
-  sublayers: [{ name: "layer_name" }]
-});
-```
-
-### WFSLayer
-```javascript
-import WFSLayer from "@arcgis/core/layers/WFSLayer.js";
-
-const wfsLayer = new WFSLayer({
-  url: "https://example.com/wfs",
-  name: "feature_type_name"
-});
-```
-
-### KMLLayer
-```javascript
-import KMLLayer from "@arcgis/core/layers/KMLLayer.js";
-
-const kmlLayer = new KMLLayer({
-  url: "https://example.com/file.kml"
-});
-```
+> For WMS, WFS, KML, MapImageLayer, and CatalogLayer, see [arcgis-advanced-layers](../arcgis-advanced-layers/SKILL.md).
 
 ### StreamLayer (Real-time)
 ```javascript
@@ -441,9 +414,12 @@ layer.visible = false;
 layer.opacity = 0.5; // 0-1
 
 // Watch visibility changes
-layer.watch("visible", (newValue) => {
-  console.log("Visibility changed:", newValue);
-});
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
+
+reactiveUtils.watch(
+  () => layer.visible,
+  (newValue) => console.log("Visibility changed:", newValue)
+);
 ```
 
 ## Querying Features
@@ -488,8 +464,9 @@ console.log("Total features:", count);
 
 ### Extent Query
 ```javascript
-const extent = await featureLayer.queryExtent();
-await view.goTo(extent);
+const result = await featureLayer.queryExtent();
+console.log("Feature count:", result.count);
+await view.goTo(result.extent);
 ```
 
 ### Statistics Query
@@ -532,11 +509,14 @@ console.log("Extent:", featureLayer.fullExtent);
 const layerView = await view.whenLayerView(featureLayer);
 
 // Check if updating
-layerView.watch("updating", (updating) => {
-  if (!updating) {
-    console.log("Layer view finished updating");
+reactiveUtils.watch(
+  () => layerView.updating,
+  (updating) => {
+    if (!updating) {
+      console.log("Layer view finished updating");
+    }
   }
-});
+);
 ```
 
 ## Definition Expressions (Filters)
@@ -586,6 +566,14 @@ layer.renderer = renderer;
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `intro-layers` - Introduction to working with layers
+- `layers-featurelayer` - FeatureLayer configuration and usage
+- `layers-geojson` - Loading GeoJSON data as a layer
+- `featurelayer-query` - Querying features from a FeatureLayer
+- `get-started-graphics` - Working with Graphics and GraphicsLayer
 
 ## Common Pitfalls
 

@@ -271,6 +271,29 @@ const view = new SceneView({
 });
 ```
 
+## Video View Container
+
+The `arcgis-video` component is a third view container alongside `arcgis-map` and `arcgis-scene`, used for displaying video feeds from video services.
+
+### Map Component
+```html
+<arcgis-video>
+  <arcgis-zoom slot="top-left"></arcgis-zoom>
+</arcgis-video>
+```
+
+```javascript
+import "@arcgis/map-components/dist/components/arcgis-video";
+
+const videoElement = document.querySelector("arcgis-video");
+videoElement?.addEventListener("arcgisViewReadyChange", (event) => {
+  const { view } = event.detail;
+  console.log("Video view ready:", view);
+});
+```
+
+> **Note:** `arcgis-video` supports the same position slots as `arcgis-map` and `arcgis-scene`: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `top-start`, `top-end`, `bottom-start`, `bottom-end`.
+
 ## Loading WebMaps and WebScenes
 
 ### WebMap (2D)
@@ -342,7 +365,7 @@ const view = new SceneView({
 </arcgis-map>
 ```
 
-Available slots: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `manual`
+Available slots: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `top-start`, `top-end`, `bottom-start`, `bottom-end`
 
 ## View Configuration
 
@@ -438,17 +461,23 @@ view.on("pointer-move", (event) => {
   console.log("Mouse at:", point.longitude, point.latitude);
 });
 
-// Extent change
-view.watch("extent", (extent) => {
-  console.log("Extent changed:", extent);
-});
+// Extent change (using reactiveUtils)
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
+
+reactiveUtils.watch(
+  () => view.extent,
+  (extent) => console.log("Extent changed:", extent)
+);
 
 // Stationary (after pan/zoom completes)
-view.watch("stationary", (isStationary) => {
-  if (isStationary) {
-    console.log("Navigation complete");
+reactiveUtils.watch(
+  () => view.stationary,
+  (isStationary) => {
+    if (isStationary) {
+      console.log("Navigation complete");
+    }
   }
-});
+);
 ```
 
 ## Module Imports
@@ -500,7 +529,7 @@ const response = await esriRequest(url, {
     param1: "value1"
   },
   responseType: "json",  // "json", "text", "array-buffer", "blob", "image"
-  method: "post",        // "auto", "get", "post"
+  method: "post",        // "auto", "head", "post"
   body: formData,        // For POST requests
   timeout: 30000,        // Timeout in ms
   headers: {
@@ -661,22 +690,6 @@ try {
 abortController.abort();
 ```
 
-### Create Resolver
-```javascript
-import promiseUtils from "@arcgis/core/core/promiseUtils.js";
-
-// Create a promise that can be resolved/rejected externally
-const { promise, resolve, reject } = promiseUtils.createResolver();
-
-// Later, resolve or reject
-resolve(result);
-// or
-reject(error);
-
-// Use the promise
-const result = await promise;
-```
-
 ## reactiveUtils (Property Watching)
 
 ### Watch Properties
@@ -709,6 +722,14 @@ reactiveUtils.when(
   () => console.log("Layer loaded")
 );
 ```
+
+## Reference Samples
+
+- `intro-mapview` - Basic MapView setup and configuration
+- `intro-sceneview` - Basic SceneView setup for 3D
+- `webmap-basic` - Loading a WebMap from portal
+- `watch-for-changes-reactiveutils` - Reactive property watching with reactiveUtils
+- `overview-map` - Creating an overview/inset map
 
 ## Common Pitfalls
 

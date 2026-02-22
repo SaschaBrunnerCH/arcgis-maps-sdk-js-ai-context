@@ -1,6 +1,6 @@
 ---
 name: arcgis-core-utilities
-description: Core utilities including Accessor pattern, Collection, reactiveUtils, promiseUtils, and workers. Use for reactive programming, property watching, async operations, and background processing.
+description: Core utilities including Accessor pattern, Collection, reactiveUtils, promiseUtils, intl (internationalization), and workers. Use for reactive programming, property watching, locale formatting, async operations, and background processing.
 ---
 
 # ArcGIS Core Utilities
@@ -269,7 +269,15 @@ reactiveUtils.once(
 
 ### whenOnce()
 
-Deprecated - use when() or once() instead.
+Wait for a property to become truthy once, returns a promise.
+
+```javascript
+// Wait for view to be ready
+await reactiveUtils.whenOnce(
+  () => view.ready
+);
+console.log("View is ready");
+```
 
 ### on()
 
@@ -392,22 +400,6 @@ Utilities for working with Promises.
 import promiseUtils from "@arcgis/core/core/promiseUtils.js";
 ```
 
-### create()
-
-Create an abortable promise.
-
-```javascript
-const { promise, resolve, reject } = promiseUtils.create();
-
-// Later...
-resolve(result);
-// or
-reject(new Error("Failed"));
-
-// Wait for it
-const result = await promise;
-```
-
 ### eachAlways()
 
 Wait for all promises, regardless of success/failure.
@@ -451,18 +443,6 @@ input.addEventListener("input", async (e) => {
 });
 ```
 
-### throttle()
-
-Throttle a function.
-
-```javascript
-const throttledUpdate = promiseUtils.throttle(async (extent) => {
-  await updateDisplay(extent);
-}, 100); // Max once per 100ms
-
-view.watch("extent", throttledUpdate);
-```
-
 ### isAbortError()
 
 Check if error is from aborted operation.
@@ -476,21 +456,6 @@ try {
   } else {
     throw error;
   }
-}
-```
-
-### timeout()
-
-Add timeout to a promise.
-
-```javascript
-try {
-  const result = await promiseUtils.timeout(
-    fetch("/api/slow-endpoint"),
-    5000  // 5 second timeout
-  );
-} catch (e) {
-  console.error("Request timed out or failed");
 }
 ```
 
@@ -581,27 +546,6 @@ urlUtils.addProxyRule({
   urlPrefix: "https://services.arcgis.com",
   proxyUrl: "/proxy"
 });
-
-// Get proxy URL
-const proxiedUrl = urlUtils.getProxyUrl("https://services.arcgis.com/data");
-
-// URL helpers
-const normalized = urlUtils.normalize("https://example.com//path//to//resource");
-```
-
-## Units and Quantities
-
-```javascript
-import units from "@arcgis/core/core/units.js";
-
-// Convert units
-const meters = units.convertUnit(100, "feet", "meters");
-const sqKm = units.convertUnit(1000, "acres", "square-kilometers");
-
-// Get unit info
-const info = units.getUnitInfo("meters");
-console.log(info.abbreviation); // "m"
-console.log(info.pluralLabel); // "meters"
 ```
 
 ## Scheduling
@@ -690,6 +634,112 @@ reactiveUtils.watch(
   }
 );
 ```
+
+## Internationalization (intl)
+
+The `intl` module provides locale-aware formatting for numbers, dates, and coordinates.
+
+### Number Formatting
+
+```javascript
+import * as intl from "@arcgis/core/intl.js";
+
+// Format numbers with locale settings
+const formatted = intl.formatNumber(1234567.89);
+// "1,234,567.89" (en-US) or "1.234.567,89" (de-DE)
+
+// Format with options
+const currency = intl.formatNumber(1234.5, {
+  style: "currency",
+  currency: "USD"
+});
+// "$1,234.50"
+
+const percent = intl.formatNumber(0.75, {
+  style: "percent"
+});
+// "75%"
+```
+
+### Date Formatting
+
+```javascript
+import * as intl from "@arcgis/core/intl.js";
+
+const date = new Date();
+
+// Format dates
+const formatted = intl.formatDate(date);
+
+// Format with options
+const longDate = intl.formatDate(date, {
+  dateStyle: "full",
+  timeStyle: "short"
+});
+```
+
+### Setting Locale
+
+```javascript
+import * as intl from "@arcgis/core/intl.js";
+
+// Set the locale for the entire application
+intl.setLocale("fr");
+
+// Get current locale
+const locale = intl.getLocale();
+
+// Watch for locale changes
+intl.onLocaleChange((locale) => {
+  console.log("Locale changed to:", locale);
+});
+```
+
+### Message Bundles (i18n)
+
+```javascript
+import * as intl from "@arcgis/core/intl.js";
+
+// Register custom message bundle
+intl.registerMessageBundleLoader({
+  pattern: "my-app/",
+  async fetchMessageBundle(bundleId, locale) {
+    const response = await fetch(`./nls/${locale}/${bundleId}.json`);
+    return response.json();
+  }
+});
+
+// Use message bundle
+const messages = await intl.fetchMessageBundle("my-app/messages");
+console.log(messages.greeting); // Localized string
+```
+
+### Coordinate Formatting
+
+```javascript
+import * as coordinateFormatter from "@arcgis/core/geometry/coordinateFormatter.js";
+
+// Load the coordinate formatter module
+await coordinateFormatter.load();
+
+// Format point as DMS (degrees, minutes, seconds)
+const dms = coordinateFormatter.toLatitudeLongitude(point, "dms", 2);
+// "34°01'12.00\"N 118°48'18.00\"W"
+
+// Format as UTM
+const utm = coordinateFormatter.toUtm(point, "north-south-indicators", true);
+// "11S 357811 3764417"
+
+// Parse coordinate string to Point
+const parsed = coordinateFormatter.fromLatitudeLongitude("34.02N 118.805W");
+```
+
+## Reference Samples
+
+- `watch-for-changes` - Watching property changes on map objects
+- `watch-for-changes-reactiveutils` - Modern reactive property watching
+- `chaining-promises` - Promise chaining patterns with the API
+- `event-explorer` - Exploring view and layer events
 
 ## Common Pitfalls
 

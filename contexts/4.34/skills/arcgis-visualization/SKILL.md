@@ -424,7 +424,7 @@ layer.labelsVisible = true;
 ### Label Placements
 - Points: `above-center`, `below-center`, `center-center`, `above-left`, etc.
 - Lines: `above-along`, `below-along`, `center-along`
-- Polygons: `always-horizontal`, `curved-horizontal`
+- Polygons: `always-horizontal`
 
 ### Arcade Label Expressions
 ```javascript
@@ -439,67 +439,9 @@ labelExpressionInfo: {
 }
 ```
 
-## Effects and Blend Modes
+> For layer effects (bloom, blur, drop-shadow) and blend modes, see [arcgis-feature-effects](../arcgis-feature-effects/SKILL.md).
 
-### Layer Effects
-```javascript
-// Drop shadow
-layer.effect = "drop-shadow(2px 2px 3px gray)";
-
-// Blur
-layer.effect = "blur(2px)";
-
-// Grayscale
-layer.effect = "grayscale(100%)";
-
-// Brightness/contrast
-layer.effect = "brightness(150%) contrast(120%)";
-
-// Combined effects
-layer.effect = "drop-shadow(1px, 1px, 1px, gray) brightness(120%)";
-```
-
-### Feature Effects
-```javascript
-import FeatureEffect from "@arcgis/core/layers/support/FeatureEffect.js";
-
-layerView.featureEffect = new FeatureEffect({
-  filter: {
-    where: "population > 100000"
-  },
-  includedEffect: "bloom(1, 0.5px, 0.2)",
-  excludedEffect: "grayscale(100%) opacity(30%)"
-});
-```
-
-### Blend Modes
-```javascript
-layer.blendMode = "multiply"; // normal, multiply, screen, overlay, darken, lighten
-```
-
-## Smart Mapping (Auto-generated Renderers)
-
-```javascript
-import colorRendererCreator from "@arcgis/core/smartMapping/renderers/color.js";
-import sizeRendererCreator from "@arcgis/core/smartMapping/renderers/size.js";
-
-// Generate color renderer
-const colorResponse = await colorRendererCreator.createContinuousRenderer({
-  layer: featureLayer,
-  field: "population",
-  view: view,
-  theme: "high-to-low" // above, below, high-to-low, centered-on, extremes
-});
-featureLayer.renderer = colorResponse.renderer;
-
-// Generate size renderer
-const sizeResponse = await sizeRendererCreator.createContinuousRenderer({
-  layer: featureLayer,
-  field: "magnitude",
-  view: view
-});
-featureLayer.renderer = sizeResponse.renderer;
-```
+> For smart mapping renderers and data-driven visualization, see [arcgis-smart-mapping](../arcgis-smart-mapping/SKILL.md).
 
 ## Autocasting
 
@@ -555,6 +497,14 @@ layer.renderer = new SimpleRenderer({
 ```
 
 > **Tip:** Use autocasting for configuration-heavy code. Use explicit classes when you need instance methods or `instanceof` checks. See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance.
+
+## Reference Samples
+
+- `get-started-visualization` - Getting started with data visualization
+- `visualization-classbreaks` - ClassBreaksRenderer for numeric data
+- `visualization-unique-value-groups` - Grouped unique value renderers
+- `visualization-vv-color` - Visual variables with color
+- `labels-basic` - Basic label configuration
 
 ## Common Pitfalls
 

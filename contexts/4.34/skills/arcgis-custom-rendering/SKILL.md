@@ -1,6 +1,6 @@
 ---
 name: arcgis-custom-rendering
-description: Create custom layer types with WebGL rendering, custom tile layers, and blend layers. Use for advanced visualizations and custom data sources.
+description: Create custom layer types by extending BaseLayerView2D/3D with WebGL rendering, custom tile layers, and blend layers. Use for advanced visualizations and custom data sources.
 ---
 
 # ArcGIS Custom Rendering
@@ -341,21 +341,6 @@ view.when(() => {
 });
 ```
 
-## Tessellation Helpers
-
-### Using Tessellation for Complex Geometries
-```javascript
-import tessellate from "@arcgis/core/geometry/support/tessellate.js";
-
-// Tessellate a polygon for WebGL rendering
-const polygon = new Polygon({
-  rings: [[/* coordinates */]]
-});
-
-const tessellated = tessellate(polygon);
-// Use tessellated.vertices and tessellated.indices for WebGL
-```
-
 ## Complete Example
 
 ```html
@@ -430,6 +415,176 @@ const tessellated = tessellate(polygon);
 </body>
 </html>
 ```
+
+## LayerView Architecture
+
+Custom layers work through the LayerView pattern: a Layer defines data and properties, while its LayerView handles rendering in a specific view type.
+
+### BaseLayerView2D
+
+For 2D custom rendering without WebGL:
+
+```javascript
+import BaseLayerView2D from "@arcgis/core/views/2d/layers/BaseLayerView2D.js";
+import Layer from "@arcgis/core/layers/Layer.js";
+
+const CustomLayer = Layer.createSubclass({
+  createLayerView(view) {
+    if (view.type === "2d") {
+      return new CustomLayerView2D({ view, layer: this });
+    }
+  }
+});
+
+const CustomLayerView2D = BaseLayerView2D.createSubclass({
+  // Called when the LayerView is attached to the view
+  attach() {
+    // Initialize resources (canvas, data structures)
+  },
+
+  // Called every frame when the layer needs to render
+  render(renderParameters) {
+    const { context, state, stationary } = renderParameters;
+    const ctx = context; // CanvasRenderingContext2D
+
+    // state.size — viewport size [width, height]
+    // state.resolution — map units per pixel
+    // state.extent — current visible extent
+    // state.rotation — current map rotation
+
+    // Convert map coordinates to screen coordinates
+    const screenPoint = state.toScreen(state.center);
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(screenPoint[0] - 5, screenPoint[1] - 5, 10, 10);
+  },
+
+  // Called when the LayerView is detached
+  detach() {
+    // Clean up resources
+  }
+});
+```
+
+### BaseLayerViewGL2D
+
+For 2D custom rendering with WebGL:
+
+```javascript
+import BaseLayerViewGL2D from "@arcgis/core/views/2d/layers/BaseLayerViewGL2D.js";
+
+const CustomGLLayerView = BaseLayerViewGL2D.createSubclass({
+  attach() {
+    const gl = this.context; // WebGLRenderingContext
+
+    // Create shaders, buffers, programs
+    this.program = this.createShaderProgram(gl);
+    this.buffer = gl.createBuffer();
+  },
+
+  render(renderParameters) {
+    const gl = renderParameters.context;
+    const { displayViewMatrix3, viewMatrix3, size } = renderParameters.state;
+
+    gl.useProgram(this.program);
+
+    // Use displayViewMatrix3 for pixel-aligned rendering
+    // Use viewMatrix3 for map-coordinate rendering
+    gl.uniformMatrix3fv(
+      gl.getUniformLocation(this.program, "u_matrix"),
+      false,
+      renderParameters.state.displayViewMatrix3
+    );
+
+    gl.drawArrays(gl.TRIANGLES, 0, this.vertexCount);
+  },
+
+  detach() {
+    const gl = this.context;
+    gl.deleteProgram(this.program);
+    gl.deleteBuffer(this.buffer);
+  },
+
+  // Request re-render when data changes
+  requestRender() {
+    this.requestRender();
+  }
+});
+```
+
+### 3D Custom Rendering with RenderNode
+
+For 3D custom rendering in SceneView:
+
+```javascript
+import RenderNode from "@arcgis/core/views/3d/webgl/RenderNode.js";
+
+const CustomRenderNode = RenderNode.createSubclass({
+  consumes: { required: ["composite-color"] },
+  produces: "composite-color",
+
+  initialize() {
+    this.addHandles(
+      reactiveUtils.watch(() => this.view.ready, (ready) => {
+        if (ready) this.setup();
+      })
+    );
+  },
+
+  setup() {
+    const gl = this.gl; // WebGL2RenderingContext
+    // Create shaders, buffers, textures
+  },
+
+  render(inputs) {
+    const output = this.bindRenderTarget();
+    const gl = this.gl;
+    const camera = this.camera;
+
+    // camera.viewMatrix — view transformation
+    // camera.projectionMatrix — projection transformation
+    // camera.eye — camera position in world space
+
+    // Draw custom 3D content
+    this.drawCustomContent(gl, camera);
+
+    // Pass through the composite color
+    this.requestRender();
+  },
+
+  destroy() {
+    // Clean up WebGL resources
+  }
+});
+
+// Add render node to SceneView
+const view = new SceneView({ container: "viewDiv", map });
+view.when(() => {
+  new CustomRenderNode({ view });
+});
+```
+
+### LayerView Properties and Methods
+
+| Property/Method | Description |
+|----------------|-------------|
+| `layer` | Reference to the associated Layer |
+| `view` | Reference to the MapView or SceneView |
+| `suspended` | Whether the LayerView is suspended (not visible) |
+| `updating` | Whether the LayerView is updating |
+| `visible` | Whether the LayerView is visible |
+| `requestRender()` | Request a re-render on next frame |
+| `attach()` | Called when LayerView is added to view |
+| `detach()` | Called when LayerView is removed from view |
+| `render()` | Called every frame to draw content |
+
+## Reference Samples
+
+- `layers-custom-tilelayer` - Creating custom tile layers
+- `layers-custom-blendlayer` - Custom blend layer implementation
+- `custom-gl-tiles` - Custom WebGL tile rendering
+- `custom-gl-visuals` - Custom WebGL visual effects
+- `custom-layerview-2d` - Custom BaseLayerView2D implementation
 
 ## Common Pitfalls
 

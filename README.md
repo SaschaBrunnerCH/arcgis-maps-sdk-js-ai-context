@@ -40,11 +40,13 @@ This creates the following structure (all skills are prefixed with `arcgis-` to 
 your-project/
 └── .github/
     └── skills/
+        ├── arcgis-starter-app/
+        │   └── SKILL.md
         ├── arcgis-core-maps/
         │   └── SKILL.md
         ├── arcgis-layers/
         │   └── SKILL.md
-        ├── arcgis-visualization/
+        ├── arcgis-widgets-ui/
         │   └── SKILL.md
         └── ... (30 skill directories total)
 ```
@@ -83,45 +85,47 @@ The package includes 30 comprehensive Agent Skills covering:
 
 | Skill | Description |
 |-------|-------------|
-| arcgis-starter-app | Scaffold minimal TypeScript/Vite app with Map Components |
-| arcgis-starter-app-extended | Extended starter app with additional features |
-| arcgis-core-maps | 2D and 3D map creation, views, navigation |
+| arcgis-starter-app | Scaffold TypeScript/Vite apps (minimal and production-ready setups) |
+| arcgis-core-maps | 2D and 3D map creation, views, navigation, arcgis-video |
 | arcgis-layers | FeatureLayer, TileLayer, GeoJSONLayer, and more |
-| arcgis-visualization | Renderers, symbols, and visual variables |
+| arcgis-advanced-layers | WMS, WFS, WMTS, OGC, MapImageLayer, CatalogLayer, MediaLayer |
+| arcgis-visualization | Renderers, symbols, labels, and visual variables |
+| arcgis-smart-mapping | Smart mapping and data-driven visualization |
 | arcgis-popup-templates | Popup configuration and content |
 | arcgis-widgets-ui | Built-in widgets and UI components |
-| arcgis-geometry-operations | Geometry engine and spatial operations |
+| arcgis-widgets-advanced | BuildingExplorer, FloorFilter, Track, Locate, ScaleBar, and more |
+| arcgis-geometry-operations | Geometry operators and spatial operations |
 | arcgis-coordinates-projection | Coordinate systems and projections |
-| arcgis-authentication | OAuth, API keys, and identity management |
-| arcgis-portal-content | Portal items, groups, and content management |
-| arcgis-smart-mapping | Smart mapping and data-driven visualization |
-| arcgis-editing-advanced | Feature editing and sketching |
-| arcgis-analysis-services | Spatial analysis and geoprocessing |
-| arcgis-3d-advanced | 3D visualization and SceneView |
-| arcgis-scene-effects | 3D effects, lighting, and atmosphere |
+| arcgis-spatial-analysis | Spatial analysis, feature reduction, and analysis objects |
+| arcgis-rest-services | REST service wrappers for routing, geocoding, printing, places |
+| arcgis-3d-layers | VoxelLayer, PointCloudLayer, glTF imports, 3D analysis components |
+| arcgis-scene-environment | SceneView environment, shadows, lighting, atmosphere |
+| arcgis-feature-effects | Feature effects, filters, and blend modes |
 | arcgis-cim-symbols | CIM symbol specification |
 | arcgis-arcade | Arcade expressions |
 | arcgis-time-animation | Time-aware layers and animation |
-| arcgis-feature-effects | Feature effects and filters |
-| arcgis-custom-rendering | Custom WebGL rendering |
-| arcgis-interaction | View interaction and events |
-| arcgis-map-tools | Measurement, print, and utility tools |
+| arcgis-editing | Editor widget, forms, subtypes, versioning |
+| arcgis-interaction | Hit testing, highlighting, sketching, and events |
+| arcgis-map-tools | Measurement, print, directions, and utility tools |
 | arcgis-tables-forms | Attribute tables and feature forms |
-| arcgis-media-layers | Media and image layers |
-| arcgis-advanced-layers | Specialized layer types |
+| arcgis-custom-rendering | Custom WebGL rendering and LayerView architecture |
 | arcgis-imagery | Imagery and raster analysis |
-| arcgis-knowledge-graphs | Knowledge graph integration |
+| arcgis-authentication | OAuth, API keys, and identity management |
+| arcgis-portal-content | Portal items, groups, and content management |
+| arcgis-knowledge-graphs | Knowledge graph integration and link charts |
 | arcgis-utility-networks | Utility network analysis |
-| arcgis-core-utilities | Core utilities and helpers |
+| arcgis-core-utilities | Accessor, Collection, reactiveUtils, intl, and workers |
 
 ## Usage
 
 After installing skills, your AI agent will automatically have access to ArcGIS-specific knowledge when working in your project. The skills provide:
 
-- Correct import patterns for ESM and CDN usage
+- Correct import patterns for ESM and Map Components
 - Best practices for TypeScript with autocasting
 - Code examples for common tasks
-- API reference guidance
+- Reference samples linking to official SDK sample code
+- Common pitfalls and how to avoid them
+- Cross-references between related skills
 
 ### Supported AI Agents
 
@@ -140,7 +144,7 @@ After installing skills, your AI agent will automatically have access to ArcGIS-
 The skills in this package are based on the official ArcGIS Maps SDK for JavaScript documentation:
 
 - **Documentation:** https://developers.arcgis.com/javascript/latest/downloads/
-- **Folders used:** `api-reference` and `sample-code`
+- **Folders used:** `api-reference` and `sample-code` and `map-components`
 
 ## AI Assistance Declaration
 

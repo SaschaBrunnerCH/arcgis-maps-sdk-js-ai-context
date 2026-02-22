@@ -44,42 +44,6 @@ const featureTable = new FeatureTable({
 });
 ```
 
-### With Field Configuration
-
-```javascript
-const featureTable = new FeatureTable({
-  view: view,
-  layer: featureLayer,
-  container: "tableDiv",
-  fieldConfigs: [
-    {
-      name: "name",
-      label: "Name",
-      direction: "asc"  // Initial sort
-    },
-    {
-      name: "category",
-      label: "Category"
-    },
-    {
-      name: "value",
-      label: "Value",
-      format: {
-        digitSeparator: true,
-        places: 2
-      }
-    },
-    {
-      name: "date_created",
-      label: "Created",
-      format: {
-        dateFormat: "short-date"
-      }
-    }
-  ]
-});
-```
-
 ### FeatureTable Configuration
 
 ```javascript
@@ -116,7 +80,6 @@ const featureTable = new FeatureTable({
 
   // Initial state
   filterGeometry: view.extent,  // Only show features in view
-  highlightOnRowSelectEnabled: true
 });
 ```
 
@@ -196,26 +159,13 @@ const featureTable = new FeatureTable({
 ### FeatureTable Events
 
 ```javascript
-// Row selection
-featureTable.on("selection-change", (event) => {
-  console.log("Added:", event.added);
-  console.log("Removed:", event.removed);
+// Watch for selection changes using highlightIds
+featureTable.highlightIds.on("change", (event) => {
+  console.log("Added IDs:", event.added);
+  console.log("Removed IDs:", event.removed);
 
-  // Get all selected features
-  const selectedFeatures = featureTable.highlightIds.toArray();
-});
-
-// Row click (double-click to zoom)
-featureTable.viewModel.on("row-highlight-change", (event) => {
-  if (event.feature) {
-    view.goTo(event.feature.geometry);
-  }
-});
-
-// Editing complete
-featureTable.on("edit-complete", (event) => {
-  console.log("Edited feature:", event.feature);
-  console.log("Updated attributes:", event.attributes);
+  const selectedIds = featureTable.highlightIds.toArray();
+  console.log("All selected:", selectedIds);
 });
 ```
 
@@ -268,7 +218,7 @@ view.on("click", async (event) => {
 });
 
 // Table selection highlights on map
-featureTable.on("selection-change", async (event) => {
+featureTable.highlightIds.on("change", async (event) => {
   const layerView = await view.whenLayerView(featureLayer);
 
   if (highlightHandle) {
@@ -649,8 +599,8 @@ featureForm.on("value-change", (event) => {
 Configure attribute table in Editor widget.
 
 ```javascript
-import AttributeTableTemplate from "@arcgis/core/widgets/Editor/support/AttributeTableTemplate.js";
-import AttributeTableFieldElement from "@arcgis/core/widgets/Editor/support/AttributeTableFieldElement.js";
+import AttributeTableTemplate from "@arcgis/core/form/support/AttributeTableTemplate.js";
+import AttributeTableFieldElement from "@arcgis/core/form/support/AttributeTableFieldElement.js";
 
 const tableTemplate = new AttributeTableTemplate({
   elements: [
@@ -755,23 +705,29 @@ const formTemplate = new FormTemplate({
 ### FeatureTable with Editing
 
 ```javascript
+import FieldColumnTemplate from "@arcgis/core/widgets/FeatureTable/support/FieldColumnTemplate.js";
+
 const featureTable = new FeatureTable({
   view: view,
   layer: featureLayer,
   container: "tableDiv",
   editingEnabled: true,
-  fieldConfigs: [
-    { name: "name", label: "Name", editable: true },
-    { name: "status", label: "Status", editable: true },
-    { name: "created_date", label: "Created", editable: false }
-  ]
-});
-
-featureTable.on("edit-complete", async (event) => {
-  console.log("Edit saved:", event.feature.attributes);
-
-  // Refresh related data
-  await featureLayer.refresh();
+  tableTemplate: {
+    columnTemplates: [
+      new FieldColumnTemplate({
+        fieldName: "name",
+        label: "Name"
+      }),
+      new FieldColumnTemplate({
+        fieldName: "status",
+        label: "Status"
+      }),
+      new FieldColumnTemplate({
+        fieldName: "created_date",
+        label: "Created"
+      })
+    ]
+  }
 });
 ```
 
@@ -834,6 +790,14 @@ const formElement = {
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `widgets-featuretable` - Basic FeatureTable widget usage
+- `widgets-featuretable-editing` - Editing with FeatureTable
+- `widgets-featuretable-map` - FeatureTable with map integration
+- `widgets-featuretable-relates` - FeatureTable with related records
+- `feature-table` - FeatureTable component usage
 
 ## Common Pitfalls
 

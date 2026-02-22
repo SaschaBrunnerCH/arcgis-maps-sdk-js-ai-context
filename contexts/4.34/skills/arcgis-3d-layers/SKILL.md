@@ -1,11 +1,11 @@
 ---
-name: arcgis-3d-advanced
-description: Advanced 3D features including VoxelLayer, PointCloudLayer, weather effects, daylight simulation, glTF model imports, and custom WebGL rendering. Use for volumetric data, LiDAR visualization, and immersive 3D experiences.
+name: arcgis-3d-layers
+description: 3D layer types including VoxelLayer, PointCloudLayer, IntegratedMeshLayer, glTF model imports, and 3D analysis components. Use for volumetric data, LiDAR visualization, and immersive 3D experiences.
 ---
 
-# ArcGIS 3D Advanced
+# ArcGIS 3D Layers
 
-Use this skill for advanced 3D visualization including voxel layers, point clouds, weather, daylight, glTF imports, and custom rendering.
+Use this skill for 3D layer types including voxel layers, point clouds, glTF imports, and 3D analysis components.
 
 ## VoxelLayer (Volumetric 3D Data)
 
@@ -41,7 +41,7 @@ map.add(voxelLayer);
   const viewElement = document.querySelector("arcgis-scene");
   viewElement.map = new Map({
     layers: [vxlLayer],
-    ground: { navigationConstraint: "none" }
+    ground: { navigationConstraint: { type: "none" } }
   });
 </script>
 ```
@@ -54,16 +54,14 @@ const voxelLayer = new VoxelLayer({
   currentVariableId: 0,
   // Slicing
   enableDynamicSections: true,
-  // Rendering style
-  renderStyle: "volume", // or "surfaces"
-  // Quality settings
-  qualityFactor: 1.0
+  // Rendering mode
+  renderMode: "volume" // or "surfaces"
 });
 
 // Access voxel-specific properties after load
 await voxelLayer.load();
 console.log("Variables:", voxelLayer.variables);
-console.log("Dimensions:", voxelLayer.dimensions);
+console.log("Volumes:", voxelLayer.volumes);
 ```
 
 ### Voxel Slicing
@@ -165,7 +163,7 @@ const elevResponse = await colorRendererCreator.createPCContinuousRenderer({
 ```javascript
 pcLayer.filters = [{
   field: "CLASS_CODE",
-  operator: "includes",
+  mode: "include",
   values: [2, 6] // Ground and Building only
 }];
 
@@ -173,127 +171,7 @@ pcLayer.filters = [{
 pcLayer.filters = [];
 ```
 
-## Weather Effects
-
-### Weather Types
-```javascript
-// Sunny (default)
-view.environment.weather = {
-  type: "sunny",
-  cloudCover: 0.2
-};
-
-// Cloudy
-view.environment.weather = {
-  type: "cloudy",
-  cloudCover: 0.6
-};
-
-// Rainy
-view.environment.weather = {
-  type: "rainy",
-  cloudCover: 0.8,
-  precipitation: 0.5 // 0-1
-};
-
-// Foggy
-view.environment.weather = {
-  type: "foggy",
-  fogStrength: 0.5 // 0-1
-};
-
-// Snowy
-view.environment.weather = {
-  type: "snowy",
-  cloudCover: 0.8,
-  precipitation: 0.5,
-  snowCover: "enabled" // or "disabled"
-};
-```
-
-### Weather Component
-```html
-<arcgis-scene item-id="...">
-  <arcgis-expand slot="top-right" expanded>
-    <arcgis-weather></arcgis-weather>
-  </arcgis-expand>
-</arcgis-scene>
-```
-
-### Weather Widget (Core API) - Deprecated
-
-> **DEPRECATED since 4.33:** Use the `arcgis-weather` component shown above instead. For information on widget deprecation, see [Esri's move to web components](https://developers.arcgis.com/javascript/latest/components-transition-plan/).
-
-```javascript
-// DEPRECATED - Use arcgis-weather component instead
-import Weather from "@arcgis/core/widgets/Weather.js";
-
-const weatherWidget = new Weather({
-  view: view
-});
-
-view.ui.add(weatherWidget, "top-right");
-```
-
-## Daylight & Lighting
-
-### Setting Date/Time
-```javascript
-// Set lighting date and time
-view.environment.lighting = {
-  date: new Date("2024-06-21T12:00:00"),
-  directShadowsEnabled: true,
-  ambientOcclusionEnabled: true
-};
-
-// Update time dynamically
-function setTime(hours) {
-  const date = new Date(view.environment.lighting.date);
-  date.setHours(hours);
-  view.environment.lighting.date = date;
-}
-```
-
-### Daylight Component
-```html
-<arcgis-scene item-id="...">
-  <arcgis-expand slot="top-right" expanded>
-    <arcgis-daylight hide-timezone play-speed-multiplier="2"></arcgis-daylight>
-  </arcgis-expand>
-</arcgis-scene>
-
-<script type="module">
-  const daylight = document.querySelector("arcgis-daylight");
-
-  // Toggle sun position vs virtual lighting
-  daylight.sunlightingDisabled = false; // Use sun position
-  daylight.sunlightingDisabled = true;  // Use virtual light
-</script>
-```
-
-### Daylight Widget (Core API)
-```javascript
-import Daylight from "@arcgis/core/widgets/Daylight.js";
-
-const daylightWidget = new Daylight({
-  view: view,
-  playSpeedMultiplier: 2 // Animation speed
-});
-
-view.ui.add(daylightWidget, "top-right");
-```
-
-### Shadow Analysis
-```javascript
-// Enable shadows
-view.environment.lighting.directShadowsEnabled = true;
-
-// Shadow cast analysis
-import ShadowCastAnalysis from "@arcgis/core/analysis/ShadowCastAnalysis.js";
-
-const shadowAnalysis = new ShadowCastAnalysis();
-view.analyses.add(shadowAnalysis);
-```
+> For scene environment settings (atmosphere, lighting, weather, shadows), see [arcgis-scene-environment](../arcgis-scene-environment/SKILL.md).
 
 ## Importing 3D Models (glTF)
 
@@ -479,7 +357,7 @@ map.ground = {
 };
 
 // Underground navigation
-map.ground.navigationConstraint = "none"; // Allow underground
+map.ground.navigationConstraint = { type: "none" }; // Allow underground
 map.ground.opacity = 0.5; // Semi-transparent ground
 ```
 
@@ -510,21 +388,20 @@ view.environment.background = {
 
 ## Scene Performance
 
-### Memory Management
+### Performance Monitoring
 ```javascript
-// Monitor memory usage
-view.watch("memoryUsage", (memoryUsage) => {
-  console.log("Memory:", memoryUsage.total, "bytes");
-});
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
+
+// Monitor performance
+reactiveUtils.watch(
+  () => view.performanceInfo,
+  (info) => {
+    console.log("Quality:", info.quality);
+  }
+);
 
 // Reduce quality for performance
 view.qualityProfile = "low";
-```
-
-### Level of Detail
-```javascript
-// For SceneLayer
-sceneLayer.lodFactor = 1.0; // 0.5 = lower detail, 2.0 = higher detail
 ```
 
 ## Viewing Modes
@@ -572,6 +449,25 @@ view.environment.weather = {
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
 
+### 3D Analysis Components
+
+| Component | Purpose |
+|-----------|---------|
+| `arcgis-building-explorer` | Explore building scene layers by discipline and floor |
+| `arcgis-elevation-profile` | Generate elevation profiles along a path |
+| `arcgis-line-of-sight` | Analyze line-of-sight visibility |
+| `arcgis-shadow-cast` | Simulate shadow casting at different times |
+| `arcgis-slice` | Slice through 3D content to reveal interior |
+| `arcgis-directional-pad` | Navigate 3D scenes with directional controls |
+
+## Reference Samples
+
+- `layers-voxel` - Working with VoxelLayer in 3D
+- `weather` - Weather effects in SceneView
+- `daylight` - Daylight widget for sun position
+- `import-gltf` - Importing glTF 3D models
+- `layers-dimension` - DimensionLayer for 3D measurements
+
 ## Common Pitfalls
 
 1. **VoxelLayer requires local viewing mode**: Use `viewing-mode="local"` for best results
@@ -582,5 +478,5 @@ view.environment.weather = {
 
 4. **glTF model scale**: Models may need scaling to fit the scene properly
 
-5. **Ground navigation constraint**: Set `navigationConstraint: "none"` to allow underground viewing
+5. **Ground navigation constraint**: Set `navigationConstraint: { type: "none" }` to allow underground viewing
 

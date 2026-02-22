@@ -1,6 +1,6 @@
 ---
 name: arcgis-interaction
-description: Handle user interaction with map features including popups, editing, sketching, and event handling. Use for creating interactive map applications with feature selection, editing workflows, and custom interactions.
+description: Handle user interaction with map views including hit testing, feature highlighting, sketching, and event handling. Use for interactive map applications with feature selection and custom interactions.
 ---
 
 # ArcGIS Interaction
@@ -9,165 +9,20 @@ Use this skill when implementing user interactions like popups, editing, sketchi
 
 ## Popups
 
-### Basic PopupTemplate
-```javascript
-const layer = new FeatureLayer({
-  url: "...",
-  popupTemplate: {
-    title: "{name}",
-    content: "Population: {population}"
-  }
-});
-```
-
-### PopupTemplate with Field Formatting
-```javascript
-const popupTemplate = {
-  title: "Feature: {name}",
-  content: [{
-    type: "fields",
-    fieldInfos: [
-      {
-        fieldName: "population",
-        label: "Population",
-        format: {
-          digitSeparator: true,
-          places: 0
-        }
-      },
-      {
-        fieldName: "date_created",
-        label: "Created",
-        format: {
-          dateFormat: "short-date"
-        }
-      },
-      {
-        fieldName: "area_sqkm",
-        label: "Area (km²)",
-        format: {
-          places: 2
-        }
-      }
-    ]
-  }]
-};
-```
-
-### Multiple Content Elements
-```javascript
-const popupTemplate = {
-  title: "{name}",
-  content: [
-    {
-      type: "text",
-      text: "<b>Description:</b> {description}"
-    },
-    {
-      type: "fields",
-      fieldInfos: [...]
-    },
-    {
-      type: "media",
-      mediaInfos: [{
-        type: "image",
-        value: {
-          sourceURL: "{image_url}"
-        }
-      }]
-    },
-    {
-      type: "attachments"
-    }
-  ]
-};
-```
-
-### Custom Content Function
-```javascript
-const popupTemplate = {
-  title: "{name}",
-  content: (feature) => {
-    const div = document.createElement("div");
-    div.innerHTML = `
-      <p>Custom content for ${feature.graphic.attributes.name}</p>
-      <button id="customBtn">Click me</button>
-    `;
-    return div;
-  }
-};
-```
-
-### Arcade Expressions in Popups
-```javascript
-const popupTemplate = {
-  title: "{name}",
-  expressionInfos: [{
-    name: "density",
-    title: "Population Density",
-    expression: "Round($feature.population / $feature.area_sqkm, 2)"
-  }],
-  content: "Population Density: {expression/density} people/km²"
-};
-```
-
-### Popup Actions
-```javascript
-const measureAction = {
-  title: "Measure Length",
-  id: "measure-this",
-  icon: "measure"
-};
-
-const popupTemplate = {
-  title: "{name}",
-  content: "{description}",
-  actions: [measureAction]
-};
-
-// Listen for action clicks
-import reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
-
-reactiveUtils.on(
-  () => view.popup,
-  "trigger-action",
-  (event) => {
-    if (event.action.id === "measure-this") {
-      const geometry = view.popup.selectedFeature.geometry;
-      // Do something with the geometry
-    }
-  }
-);
-```
+> For detailed PopupTemplate configuration, content elements, field formatting, Arcade expressions, and custom actions, see [arcgis-popup-templates](../arcgis-popup-templates/SKILL.md).
 
 ### Programmatic Popup Control
+
 ```javascript
-// Open popup at location
+// Open popup programmatically
 view.openPopup({
   title: "Custom Popup",
   content: "Hello World",
   location: view.center
 });
 
-// Open popup with features
-view.openPopup({
-  features: [graphic1, graphic2],
-  location: mapPoint
-});
-
 // Close popup
 view.closePopup();
-
-// Access popup properties
-const selectedFeature = view.popup.selectedFeature;
-const isVisible = view.popup.visible;
-```
-
-### Popup Component
-```html
-<arcgis-map basemap="streets-vector">
-  <arcgis-popup slot="popup"></arcgis-popup>
-</arcgis-map>
 ```
 
 ## Hit Testing
@@ -557,6 +412,13 @@ const graphic = new Graphic({
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `view-hittest` - Hit testing to identify features at screen coordinates
+- `highlight-point-features` - Highlighting features on the map
+- `sketch` - Sketching geometries on the map
+- `view-events` - Handling view click, pointer, and key events
 
 ## Common Pitfalls
 

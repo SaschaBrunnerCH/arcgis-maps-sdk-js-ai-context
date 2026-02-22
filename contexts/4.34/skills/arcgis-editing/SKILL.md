@@ -1,11 +1,11 @@
 ---
-name: arcgis-editing-advanced
-description: Advanced editing features including subtypes, feature forms, versioning, and configurable editors. Use for complex data entry workflows.
+name: arcgis-editing
+description: Editing features including subtypes, feature forms, versioning, and configurable editors. Use for data entry workflows and geodatabase version management.
 ---
 
-# ArcGIS Advanced Editing
+# ArcGIS Editing
 
-Use this skill for advanced editing features including subtypes, forms, versioning, and editor configuration.
+Use this skill for editing features including subtypes, forms, versioning, and editor configuration.
 
 > **Note:** For basic editing, use the `arcgis-editor` component. This skill covers advanced configurations that require the Core API.
 
@@ -52,35 +52,6 @@ const editor = new Editor({
 });
 
 view.ui.add(editor, "top-right");
-```
-
-### Editor with Field Configuration
-```javascript
-const editor = new Editor({
-  view: view,
-  layerInfos: [{
-    layer: featureLayer,
-    fieldConfig: [
-      {
-        name: "status",
-        label: "Status",
-        editable: true,
-        required: true
-      },
-      {
-        name: "created_date",
-        label: "Created",
-        editable: false  // Read-only
-      },
-      {
-        name: "comments",
-        label: "Comments",
-        editable: true,
-        maxLength: 500
-      }
-    ]
-  }]
-});
 ```
 
 ## Feature Form
@@ -243,8 +214,7 @@ const vms = new VersionManagementService({
 
 await vms.load();
 
-console.log("Default version:", vms.defaultVersionName);
-console.log("Supports versioning:", vms.supportsVersioning);
+console.log("Default version:", vms.defaultVersionIdentifier);
 ```
 
 ### Get Version Information
@@ -330,21 +300,31 @@ map.layers.forEach(layer => {
 ### Start/Stop Edit Session
 
 ```javascript
-// Start editing session
-const session = await vms.startReading({
-  versionName: "sde.MyEditVersion"
-});
-const sessionId = session.sessionId;
+// Get the version identifier
+const versionInfos = await vms.getVersionInfos();
+const versionIdentifier = versionInfos.find(
+  v => v.versionName === "sde.MyEditVersion"
+).versionIdentifier;
 
-// For write access
-const writeSession = await vms.startEditing({
-  versionName: "sde.MyEditVersion"
+// Start reading session
+await vms.startReading({
+  versionIdentifier: versionIdentifier
 });
 
-// Stop session when done
+// Start editing session (for write access)
+await vms.startEditing({
+  versionIdentifier: versionIdentifier
+});
+
+// Stop editing when done
 await vms.stopEditing({
-  sessionId: sessionId,
+  versionIdentifier: versionIdentifier,
   saveEdits: true  // or false to discard
+});
+
+// Stop reading when done
+await vms.stopReading({
+  versionIdentifier: versionIdentifier
 });
 ```
 
@@ -353,19 +333,18 @@ await vms.stopEditing({
 ```javascript
 // Reconcile version with parent
 const reconcileResult = await vms.reconcile({
-  sessionId: sessionId,
+  versionIdentifier: versionIdentifier,
   abortIfConflicts: false,
-  conflictDetection: "byAttribute",  // byAttribute, byObject
+  conflictDetection: "by-attribute",  // by-attribute, by-object
   withPost: false,
   conflictResolution: "favorEditVersion"  // favorEditVersion, favorTargetVersion
 });
 
 console.log("Has conflicts:", reconcileResult.hasConflicts);
-console.log("Conflicts removed:", reconcileResult.conflictsRemoved);
 
 if (!reconcileResult.hasConflicts) {
   // Post changes to parent version
-  await vms.post({ sessionId });
+  await vms.post({ versionIdentifier });
   console.log("Changes posted successfully");
 }
 ```
@@ -375,9 +354,9 @@ if (!reconcileResult.hasConflicts) {
 ```javascript
 // Check for conflicts before reconcile
 const conflictResult = await vms.reconcile({
-  sessionId: sessionId,
+  versionIdentifier: versionIdentifier,
   abortIfConflicts: true,  // Stop if conflicts found
-  conflictDetection: "byAttribute"
+  conflictDetection: "by-attribute"
 });
 
 if (conflictResult.hasConflicts) {
@@ -386,68 +365,12 @@ if (conflictResult.hasConflicts) {
 
   // Resolve conflicts by favoring edit version
   const resolveResult = await vms.reconcile({
-    sessionId: sessionId,
+    versionIdentifier: versionIdentifier,
     abortIfConflicts: false,
     conflictResolution: "favorEditVersion",
     withPost: true
   });
 }
-```
-
-### Version Differences
-
-```javascript
-// Get differences between versions
-const differences = await vms.getVersionDifferences({
-  sessionId: sessionId,
-  fromMoment: "commonAncestor",  // commonAncestor, now
-  layers: ["0", "1"]  // Layer IDs to compare
-});
-
-differences.forEach(diff => {
-  console.log("Layer:", diff.layerId);
-  console.log("Inserts:", diff.inserts);
-  console.log("Updates:", diff.updates);
-  console.log("Deletes:", diff.deletes);
-});
-```
-
-### Version Lock Management
-
-```javascript
-// Get lock status
-const lockInfo = await vms.getLockInfo({
-  versionName: "sde.MyEditVersion"
-});
-
-console.log("Is locked:", lockInfo.isLocked);
-console.log("Locked by:", lockInfo.lockOwner);
-console.log("Lock type:", lockInfo.lockType);
-
-// Acquire exclusive lock
-await vms.acquireLock({
-  versionName: "sde.MyEditVersion",
-  lockType: "exclusive"  // shared, exclusive
-});
-
-// Release lock
-await vms.releaseLock({
-  versionName: "sde.MyEditVersion"
-});
-```
-
-### Validate Network Topology
-
-```javascript
-// For utility networks - validate topology after edits
-const validateResult = await vms.validateNetworkTopology({
-  sessionId: sessionId,
-  validateArea: extent,  // Optional extent to validate
-  validationType: "normal"  // normal, rebuild
-});
-
-console.log("Validation success:", validateResult.success);
-console.log("Dirty areas remaining:", validateResult.dirtyAreaCount);
 ```
 
 ### Complete Version Workflow
@@ -461,14 +384,16 @@ async function editInVersion(vms, featureLayer, edits) {
     access: "private"
   });
 
+  const versionIdentifier = version.versionIdentifier;
+
   try {
     // 2. Switch layer to version
     featureLayer.gdbVersion = version.versionName;
     await featureLayer.refresh();
 
     // 3. Start edit session
-    const session = await vms.startEditing({
-      versionName: version.versionName
+    await vms.startEditing({
+      versionIdentifier: versionIdentifier
     });
 
     // 4. Apply edits
@@ -476,7 +401,7 @@ async function editInVersion(vms, featureLayer, edits) {
 
     // 5. Reconcile with parent
     const reconcileResult = await vms.reconcile({
-      sessionId: session.sessionId,
+      versionIdentifier: versionIdentifier,
       abortIfConflicts: false,
       conflictResolution: "favorEditVersion",
       withPost: false
@@ -487,11 +412,11 @@ async function editInVersion(vms, featureLayer, edits) {
     }
 
     // 6. Post to parent
-    await vms.post({ sessionId: session.sessionId });
+    await vms.post({ versionIdentifier });
 
     // 7. Stop editing
     await vms.stopEditing({
-      sessionId: session.sessionId,
+      versionIdentifier: versionIdentifier,
       saveEdits: true
     });
 
@@ -499,7 +424,7 @@ async function editInVersion(vms, featureLayer, edits) {
 
   } finally {
     // 8. Switch back to default and delete temp version
-    featureLayer.gdbVersion = vms.defaultVersionName;
+    featureLayer.gdbVersion = vms.defaultVersionIdentifier;
     await featureLayer.refresh();
 
     await vms.deleteVersion({
@@ -521,23 +446,6 @@ const relatedRecords = await layer.queryRelatedFeatures({
 
 relatedRecords[selectedObjectId].features.forEach(related => {
   console.log("Related:", related.attributes);
-});
-```
-
-### Edit Related Records in Form
-```javascript
-const editor = new Editor({
-  view: view,
-  layerInfos: [{
-    layer: parentLayer,
-    // Include related tables
-    relatedTableInfos: [{
-      layer: relatedTable,
-      addEnabled: true,
-      updateEnabled: true,
-      deleteEnabled: true
-    }]
-  }]
 });
 ```
 
@@ -583,15 +491,21 @@ const form = new FeatureForm({
       type: "field",
       fieldName: "email",
       label: "Email",
-      validationExpression: {
-        expression: `
-          var email = $feature.email;
-          return IIf(Find("@", email) > 0, true, { valid: false, errorMessage: "Invalid email" });
-        `
-      }
+      // Use requiredExpression to conditionally require a field
+      requiredExpression: "email-required"
+    }],
+    expressionInfos: [{
+      name: "email-required",
+      expression: "$feature.contact_method == 'email'"
     }]
   }
 });
+
+// Available expression types on FieldElement:
+// - visibilityExpression: controls field visibility
+// - editableExpression: controls whether field is editable
+// - requiredExpression: controls whether field is required
+// - valueExpression: computes a calculated value for the field
 
 // Check validity before submit
 if (form.valid) {
@@ -687,6 +601,19 @@ const editor = new Editor({
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+### Editing Components
+
+| Component | Purpose |
+|-----------|---------|
+| `arcgis-version-management` | Manage and switch between geodatabase versions |
+
+## Reference Samples
+
+- `widgets-editor-configurable` - Configurable Editor widget
+- `widgets-editor-subtypes` - Editing with subtype group layers
+- `editing-featureform-fieldvisibility` - Controlling field visibility in forms
+- `changing-version` - Switching geodatabase versions
 
 ## Common Pitfalls
 

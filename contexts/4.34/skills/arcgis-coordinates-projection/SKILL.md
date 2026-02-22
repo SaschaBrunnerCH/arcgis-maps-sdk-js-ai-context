@@ -101,9 +101,7 @@ import projectOperator from "@arcgis/core/geometry/operators/projectOperator.js"
 await projectOperator.load();
 
 // Project geometry to WGS84
-const projectedGeometry = projectOperator.execute(geometry, {
-  outSpatialReference: { wkid: 4326 }
-});
+const projectedGeometry = projectOperator.execute(geometry, { wkid: 4326 });
 ```
 
 ### Project with Geographic Transformation
@@ -113,80 +111,14 @@ import projectOperator from "@arcgis/core/geometry/operators/projectOperator.js"
 await projectOperator.load();
 
 // Project with specific transformation (e.g., NAD83 to WGS84)
-const projectedGeometry = projectOperator.execute(geometry, {
-  outSpatialReference: { wkid: 4326 },
+const projectedGeometry = projectOperator.execute(geometry, { wkid: 4326 }, {
   geographicTransformation: {
     steps: [{ wkid: 108190 }]  // NAD_1983_To_WGS_1984_5
   }
 });
 ```
 
-### Check Available Transformations
-```javascript
-import projectOperator from "@arcgis/core/geometry/operators/projectOperator.js";
-
-await projectOperator.load();
-
-// Get available transformations between spatial references
-const transformations = projectOperator.getTransformations(
-  { wkid: 4269 },  // NAD83
-  { wkid: 4326 }   // WGS84
-);
-
-console.log("Available transformations:", transformations);
-```
-
-## Modern Geometry Operators
-
-Use geometry operators for geodesic calculations (recommended).
-
-### Geodesic Distance
-```javascript
-import geodesicDistance from "@arcgis/core/geometry/operators/geodesicDistanceOperator.js";
-
-// Calculate geodesic distance between two points
-const distance = geodesicDistance.execute(point1, point2, {
-  unit: "kilometers"
-});
-```
-
-### Geodesic Area
-```javascript
-import geodesicArea from "@arcgis/core/geometry/operators/geodesicAreaOperator.js";
-
-const area = geodesicArea.execute(polygon, {
-  unit: "square-kilometers"
-});
-```
-
-### Geodesic Length
-```javascript
-import geodesicLength from "@arcgis/core/geometry/operators/geodesicLengthOperator.js";
-
-const length = geodesicLength.execute(polyline, {
-  unit: "kilometers"
-});
-```
-
-### Geodesic Buffer
-```javascript
-import geodesicBuffer from "@arcgis/core/geometry/operators/geodesicBufferOperator.js";
-
-const buffer = geodesicBuffer.execute(point, {
-  distance: 100,
-  unit: "kilometers"
-});
-```
-
-### Geodesic Densify
-```javascript
-import geodesicDensify from "@arcgis/core/geometry/operators/geodesicDensifyOperator.js";
-
-const densifiedLine = geodesicDensify.execute(polyline, {
-  maxSegmentLength: 10000,  // meters
-  unit: "meters"
-});
-```
+> For geodetic geometry operations (geodesicBuffer, geodesicLength, geodesicArea, etc.), see [arcgis-geometry-operations](../arcgis-geometry-operations/SKILL.md).
 
 ## Geometry Service Projection
 
@@ -350,6 +282,12 @@ const point = coordinateFormatter.fromUsng("11SNU1234567890");
 </html>
 ```
 
+## Reference Samples
+
+- `coordinate-conversion` - Converting between coordinate formats
+- `client-projection` - Client-side projection of geometries
+- `widgets-coordinateconversion` - CoordinateConversion widget usage
+
 ## Common Pitfalls
 
 1. **Load projection engine**: Must call `projectOperator.load()` before using
@@ -372,12 +310,11 @@ const point = coordinateFormatter.fromUsng("11SNU1234567890");
 
 | Deprecated | Modern Replacement |
 |------------|-------------------|
-| `projection.project(geom, sr)` | `projectOperator.execute(geom, { outSpatialReference: sr })` |
+| `projection.project(geom, sr)` | `projectOperator.execute(geom, sr)` |
 | `projection.load()` | `projectOperator.load()` |
-| `projection.getTransformations(from, to)` | `projectOperator.getTransformations(from, to)` |
-| `geodesicUtils.geodesicDistance(p1, p2, unit)` | `geodesicDistanceOperator.execute(p1, p2, { unit })` |
-| `geodesicUtils.geodesicArea(geom, unit)` | `geodesicAreaOperator.execute(geom, { unit })` |
-| `geodesicUtils.geodesicLength(geom, unit)` | `geodesicLengthOperator.execute(geom, { unit })` |
+| `geodesicUtils.geodesicDistance(p1, p2, unit)` | `geodeticDistanceOperator.execute(p1, p2, { unit })` |
+| `geodesicUtils.geodesicArea(geom, unit)` | `geodeticAreaOperator.execute(geom, { unit })` |
+| `geodesicUtils.geodesicLength(geom, unit)` | `geodeticLengthOperator.execute(geom, { unit })` |
 
 ### Legacy projection Module (Deprecated since 4.32)
 ```javascript

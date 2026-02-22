@@ -120,8 +120,8 @@ if (webMap.utilityNetworks && webMap.utilityNetworks.length > 0) {
   const utilityNetwork = webMap.utilityNetworks.getItemAt(0);
   await utilityNetwork.load();
 
-  console.log("Network name:", utilityNetwork.networkName);
-  console.log("Tier definitions:", utilityNetwork.definition.tierDefinitions);
+  console.log("Network name:", utilityNetwork.title);
+  console.log("Dataset name:", utilityNetwork.datasetName);
 }
 ```
 
@@ -130,11 +130,12 @@ if (webMap.utilityNetworks && webMap.utilityNetworks.length > 0) {
 const utilityNetwork = webMap.utilityNetworks.getItemAt(0);
 await utilityNetwork.load();
 
-// Access network definition
-const definition = utilityNetwork.definition;
-console.log("Domain networks:", definition.domainNetworks);
-console.log("Terminal configurations:", definition.terminalConfigurations);
-console.log("Network attributes:", definition.networkAttributes);
+// Access network properties
+console.log("Title:", utilityNetwork.title);
+console.log("Dataset name:", utilityNetwork.datasetName);
+console.log("Domain networks:", utilityNetwork.domainNetworks);
+console.log("Terminal configurations:", utilityNetwork.terminalConfigurations);
+console.log("Network attributes:", utilityNetwork.networkAttributes);
 ```
 
 ## Associations Widget Configuration
@@ -172,8 +173,7 @@ const unAssociations = new UtilityNetworkAssociations({
 
 const unAssociations = new UtilityNetworkAssociations({
   view,
-  utilityNetwork,
-  associationTypes: ["connectivity", "structural-attachment"]
+  utilityNetwork
 });
 ```
 
@@ -286,6 +286,17 @@ const view = new MapView({
 </body>
 </html>
 ```
+
+### Utility Network Components
+
+| Component | Purpose |
+|-----------|---------|
+| `arcgis-utility-network-validate-topology` | Validate utility network topology |
+
+## Reference Samples
+
+- `utility-network-trace` - Running utility network traces
+- `utility-network-associations` - Viewing utility network associations
 
 ## Common Pitfalls
 

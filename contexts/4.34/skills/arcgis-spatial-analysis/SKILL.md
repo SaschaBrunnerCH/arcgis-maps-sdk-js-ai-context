@@ -1,115 +1,13 @@
 ---
-name: arcgis-analysis-services
-description: Perform spatial analysis, geometry operations, and use ArcGIS REST services. Use for routing, geocoding, geoprocessing, elevation analysis, viewshed, and feature queries with statistics.
+name: arcgis-spatial-analysis
+description: Perform spatial analysis using analysis objects, REST services for routing/geocoding/geoprocessing, and feature reduction with clustering/binning.
 ---
 
-# ArcGIS Analysis & Services
+# ArcGIS Spatial Analysis
 
-Use this skill for spatial analysis, geometry operations, REST services, and feature reduction (clustering/binning).
+Use this skill for spatial analysis objects, REST service queries, and feature reduction (clustering/binning).
 
-## Geometry Operators
-
-ArcGIS Maps SDK provides geometry operators for client-side spatial operations.
-
-### Loading Operators
-
-```javascript
-import bufferOperator from "@arcgis/core/geometry/operators/bufferOperator.js";
-import intersectOperator from "@arcgis/core/geometry/operators/intersectOperator.js";
-import centroidOperator from "@arcgis/core/geometry/operators/centroidOperator.js";
-
-// Load before use (most operators require this)
-await bufferOperator.load();
-```
-
-### Buffer
-```javascript
-import bufferOperator from "@arcgis/core/geometry/operators/bufferOperator.js";
-await bufferOperator.load();
-
-const buffered = bufferOperator.execute(point, 1000); // 1000 meters
-```
-
-### Geodesic Buffer (accurate over large distances)
-```javascript
-import geodesicBufferOperator from "@arcgis/core/geometry/operators/geodesicBufferOperator.js";
-await geodesicBufferOperator.load();
-
-const buffered = geodesicBufferOperator.execute(point, {
-  distances: [100],
-  unit: "kilometers"
-});
-```
-
-### Intersect
-```javascript
-import intersectOperator from "@arcgis/core/geometry/operators/intersectOperator.js";
-await intersectOperator.load();
-
-const intersection = intersectOperator.execute(geometry1, geometry2);
-```
-
-### Union
-```javascript
-import unionOperator from "@arcgis/core/geometry/operators/unionOperator.js";
-await unionOperator.load();
-
-const unioned = unionOperator.execute([polygon1, polygon2, polygon3]);
-```
-
-### Centroid
-```javascript
-import centroidOperator from "@arcgis/core/geometry/operators/centroidOperator.js";
-await centroidOperator.load();
-
-const centroid = centroidOperator.execute(polygon);
-```
-
-### Contains / Within
-```javascript
-import containsOperator from "@arcgis/core/geometry/operators/containsOperator.js";
-await containsOperator.load();
-
-const isContained = containsOperator.execute(polygon, point); // true/false
-```
-
-### Distance
-```javascript
-import geodeticLengthOperator from "@arcgis/core/geometry/operators/geodeticLengthOperator.js";
-await geodeticLengthOperator.load();
-
-const length = geodeticLengthOperator.execute(polyline, { unit: "miles" });
-```
-
-### Area
-```javascript
-import geodeticAreaOperator from "@arcgis/core/geometry/operators/geodeticAreaOperator.js";
-await geodeticAreaOperator.load();
-
-const area = geodeticAreaOperator.execute(polygon, { unit: "square-kilometers" });
-```
-
-### Available Operators
-
-| Operator | Purpose |
-|----------|---------|
-| `bufferOperator` | Create buffer around geometry |
-| `geodesicBufferOperator` | Geodetic buffer (accurate) |
-| `intersectOperator` | Find intersection |
-| `unionOperator` | Combine geometries |
-| `differenceOperator` | Subtract geometries |
-| `clipOperator` | Clip geometry by envelope |
-| `convexHullOperator` | Create convex hull |
-| `centroidOperator` | Get centroid point |
-| `containsOperator` | Test if contains |
-| `withinOperator` | Test if within |
-| `intersectsOperator` | Test if intersects |
-| `distanceOperator` | Calculate planar distance |
-| `geodeticLengthOperator` | Calculate geodetic length |
-| `geodeticAreaOperator` | Calculate geodetic area |
-| `simplifyOperator` | Simplify geometry |
-| `densifyOperator` | Add vertices to geometry |
-| `projectOperator` | Project to spatial reference |
+> For geometry operators (buffer, union, intersect, clip, offset, etc.), see [arcgis-geometry-operations](../arcgis-geometry-operations/SKILL.md).
 
 ## Analysis Objects
 
@@ -191,12 +89,12 @@ const analysis = new ViewshedAnalysis({
 view.analyses.add(analysis);
 ```
 
-### ShadowCastAnalysis
+### ShadowCast Widget
 ```javascript
-import ShadowCastAnalysis from "@arcgis/core/analysis/ShadowCastAnalysis.js";
+import ShadowCast from "@arcgis/core/widgets/ShadowCast.js";
 
-const analysis = new ShadowCastAnalysis();
-view.analyses.add(analysis);
+const shadowCast = new ShadowCast({ view: view });
+view.ui.add(shadowCast, "top-right");
 
 // Configure date/time for shadow calculation
 view.environment.lighting.date = new Date("2024-06-21T12:00:00");
@@ -207,7 +105,7 @@ view.environment.lighting.date = new Date("2024-06-21T12:00:00");
 import SliceAnalysis from "@arcgis/core/analysis/SliceAnalysis.js";
 
 const analysis = new SliceAnalysis({
-  plane: {
+  shape: {
     position: { type: "point", x: -122.4, y: 37.8, z: 50 },
     heading: 0,
     tilt: 0
@@ -548,18 +446,7 @@ const binConfig = {
 featureLayer.featureReduction = binConfig;
 ```
 
-## Projection
-
-```javascript
-import projectOperator from "@arcgis/core/geometry/operators/projectOperator.js";
-await projectOperator.load();
-
-// Project to Web Mercator
-const projected = projectOperator.execute(geometry, { wkid: 3857 });
-
-// Project to WGS 84
-const wgs84 = projectOperator.execute(geometry, { wkid: 4326 });
-```
+> For coordinate projection and transformation, see [arcgis-coordinates-projection](../arcgis-coordinates-projection/SKILL.md).
 
 ## TypeScript Usage
 
@@ -592,6 +479,14 @@ featureLayer.featureReduction = clusterConfig;
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `analysis-viewshed` - Viewshed analysis
+- `route` - Route finding and directions
+- `featurereduction-cluster` - Feature clustering analysis
+- `featurereduction-binning` - Feature binning for aggregation
+- `places` - Places service for POI search
 
 ## Common Pitfalls
 

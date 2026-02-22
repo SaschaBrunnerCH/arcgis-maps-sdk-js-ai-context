@@ -317,27 +317,41 @@ const markerAtVertices = {
 ## Animated CIM Symbols
 
 ```javascript
-// Animation is controlled via primitive overrides
+// Animation is controlled via animatedSymbolProperties on symbol layers
 const animatedCIM = {
   type: "CIMSymbolReference",
-  primitiveOverrides: [{
-    type: "CIMPrimitiveOverride",
-    primitiveName: "rotatingElement",
-    propertyName: "Rotation",
-    valueExpressionInfo: {
-      type: "CIMExpressionInfo",
-      expression: "$view.animation.currentTime * 360",
-      returnType: "Default"
-    }
-  }],
   symbol: {
     type: "CIMPointSymbol",
     symbolLayers: [{
       type: "CIMVectorMarker",
-      primitiveName: "rotatingElement",
-      // ... marker definition
+      enable: true,
+      size: 20,
+      // Animation properties
+      animatedSymbolProperties: {
+        type: "CIMAnimatedSymbolProperties",
+        playAnimation: true,
+        reverseAnimation: false,
+        randomizeStartTime: true,
+        startTimeOffset: 0,
+        duration: 3, // Seconds
+        repeatType: "Loop" // Loop, Oscillate, None
+      },
+      // ... marker graphics
     }]
   }
+};
+
+// Scale animation
+const scaleAnimation = {
+  type: "CIMVectorMarker",
+  animatedSymbolProperties: {
+    type: "CIMAnimatedSymbolProperties",
+    playAnimation: true,
+    duration: 2,
+    repeatType: "Oscillate"
+  },
+  scaleSymbolsProportionally: true,
+  // ... marker definition
 };
 ```
 
@@ -471,6 +485,14 @@ const cimSymbol: __esri.CIMSymbolProperties = {
 ```
 
 > **Note:** CIM symbols are configuration objects and work well with autocasting. Use `as const` to keep discriminated union types narrow in TypeScript. See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting.
+
+## Reference Samples
+
+- `cim-symbols` - Basic CIM symbol creation
+- `cim-animations` - Animated CIM symbols
+- `cim-line-arrows` - Arrow symbols for line features
+- `cim-primitive-overrides` - CIM primitive override patterns
+- `cim-marker-placement` - Marker placement along lines
 
 ## Common Pitfalls
 

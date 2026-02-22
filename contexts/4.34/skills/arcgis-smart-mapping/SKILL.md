@@ -24,7 +24,7 @@ Use this skill to auto-generate renderers based on data, calculate statistics, a
 Creates a renderer with color gradient based on numeric values.
 
 ```javascript
-import colorRendererCreator from "@arcgis/core/smartMapping/renderers/color.js";
+import * as colorRendererCreator from "@arcgis/core/smartMapping/renderers/color.js";
 
 const { renderer, visualVariable, colorScheme } = await colorRendererCreator.createContinuousRenderer({
   layer: featureLayer,
@@ -63,7 +63,7 @@ featureLayer.renderer = renderer;
 Varies symbol size based on data values.
 
 ```javascript
-import sizeRendererCreator from "@arcgis/core/smartMapping/renderers/size.js";
+import * as sizeRendererCreator from "@arcgis/core/smartMapping/renderers/size.js";
 
 const { renderer, visualVariable } = await sizeRendererCreator.createContinuousRenderer({
   layer: featureLayer,
@@ -95,7 +95,7 @@ const { renderer } = await sizeRendererCreator.createClassBreaksRenderer({
 Creates a renderer for categorical data.
 
 ```javascript
-import typeRendererCreator from "@arcgis/core/smartMapping/renderers/type.js";
+import * as typeRendererCreator from "@arcgis/core/smartMapping/renderers/type.js";
 
 const { renderer, uniqueValueInfos } = await typeRendererCreator.createRenderer({
   layer: featureLayer,
@@ -113,7 +113,7 @@ featureLayer.renderer = renderer;
 Creates a heatmap for point density visualization.
 
 ```javascript
-import heatmapRendererCreator from "@arcgis/core/smartMapping/renderers/heatmap.js";
+import * as heatmapRendererCreator from "@arcgis/core/smartMapping/renderers/heatmap.js";
 
 const { renderer } = await heatmapRendererCreator.createRenderer({
   layer: featureLayer,
@@ -135,7 +135,7 @@ featureLayer.renderer = renderer;
 Shows density using dots within polygons.
 
 ```javascript
-import dotDensityRendererCreator from "@arcgis/core/smartMapping/renderers/dotDensity.js";
+import * as dotDensityRendererCreator from "@arcgis/core/smartMapping/renderers/dotDensity.js";
 
 const { renderer } = await dotDensityRendererCreator.createRenderer({
   layer: featureLayer,
@@ -156,9 +156,9 @@ featureLayer.renderer = renderer;
 Varies opacity based on data values.
 
 ```javascript
-import opacityRendererCreator from "@arcgis/core/smartMapping/renderers/opacity.js";
+import * as opacityRendererCreator from "@arcgis/core/smartMapping/renderers/opacity.js";
 
-const { renderer, visualVariable } = await opacityRendererCreator.createContinuousRenderer({
+const { renderer, visualVariable } = await opacityRendererCreator.createRenderer({
   layer: featureLayer,
   view: view,
   field: "confidence",
@@ -172,7 +172,7 @@ const { renderer, visualVariable } = await opacityRendererCreator.createContinuo
 Shows relationship between two variables.
 
 ```javascript
-import relationshipRendererCreator from "@arcgis/core/smartMapping/renderers/relationship.js";
+import * as relationshipRendererCreator from "@arcgis/core/smartMapping/renderers/relationship.js";
 
 const { renderer } = await relationshipRendererCreator.createRenderer({
   layer: featureLayer,
@@ -193,7 +193,7 @@ const { renderer } = await relationshipRendererCreator.createRenderer({
 Shows which category has the highest value.
 
 ```javascript
-import predominanceRendererCreator from "@arcgis/core/smartMapping/renderers/predominance.js";
+import * as predominanceRendererCreator from "@arcgis/core/smartMapping/renderers/predominance.js";
 
 const { renderer } = await predominanceRendererCreator.createRenderer({
   layer: featureLayer,
@@ -213,7 +213,7 @@ const { renderer } = await predominanceRendererCreator.createRenderer({
 Creates pie charts for each feature.
 
 ```javascript
-import pieChartRendererCreator from "@arcgis/core/smartMapping/renderers/pieChart.js";
+import * as pieChartRendererCreator from "@arcgis/core/smartMapping/renderers/pieChart.js";
 
 const { renderer } = await pieChartRendererCreator.createRenderer({
   layer: featureLayer,
@@ -233,7 +233,7 @@ const { renderer } = await pieChartRendererCreator.createRenderer({
 Combines color and size for a single variable.
 
 ```javascript
-import univariateRendererCreator from "@arcgis/core/smartMapping/renderers/univariateColorSize.js";
+import * as univariateRendererCreator from "@arcgis/core/smartMapping/renderers/univariateColorSize.js";
 
 const { renderer } = await univariateRendererCreator.createContinuousRenderer({
   layer: featureLayer,
@@ -248,7 +248,7 @@ const { renderer } = await univariateRendererCreator.createContinuousRenderer({
 Simple location-based visualization (no data driven).
 
 ```javascript
-import locationRendererCreator from "@arcgis/core/smartMapping/renderers/location.js";
+import * as locationRendererCreator from "@arcgis/core/smartMapping/renderers/location.js";
 
 const { renderer } = await locationRendererCreator.createRenderer({
   layer: featureLayer,
@@ -380,7 +380,6 @@ const result = await heatmapStatistics({
   field: "magnitude"
 });
 
-console.log(result.avgDensity);
 console.log(result.maxDensity);
 console.log(result.minDensity);
 ```
@@ -419,7 +418,7 @@ const scheme = symbologyColor.getSchemeByName({
 ### Get Color Ramps
 
 ```javascript
-import colorRamps from "@arcgis/core/smartMapping/symbology/colorRamps.js";
+import * as colorRamps from "@arcgis/core/smartMapping/symbology/support/colorRamps.js";
 
 const allRamps = colorRamps.all();
 // Returns array of color ramp objects
@@ -548,7 +547,7 @@ const { renderer } = await rasterFlow.createRenderer({
 ### Create Visual Variable
 
 ```javascript
-import colorVV from "@arcgis/core/smartMapping/renderers/color.js";
+import * as colorVV from "@arcgis/core/smartMapping/renderers/color.js";
 
 const { visualVariable } = await colorVV.createVisualVariable({
   layer: featureLayer,
@@ -638,7 +637,7 @@ const colorResult = await colorRendererCreator.createContinuousRenderer({
   field: "income"
 });
 
-const sizeResult = await sizeRendererCreator.createVisualVariable({
+const sizeResult = await sizeRendererCreator.createVisualVariables({
   layer: featureLayer,
   view: view,
   field: "population"
@@ -647,6 +646,14 @@ const sizeResult = await sizeRendererCreator.createVisualVariable({
 colorResult.renderer.visualVariables.push(sizeResult.visualVariable);
 featureLayer.renderer = colorResult.renderer;
 ```
+
+## Reference Samples
+
+- `visualization-sm-color` - Smart mapping with color renderers
+- `visualization-sm-size` - Smart mapping with size renderers
+- `visualization-sm-types` - Smart mapping for unique value types
+- `visualization-sm-relationship` - Relationship smart mapping
+- `visualization-histogram-color` - Histogram-driven color visualization
 
 ## Common Pitfalls
 

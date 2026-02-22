@@ -284,7 +284,7 @@ $datastore               // Reference to data store
 ## Execute Arcade Programmatically
 
 ```javascript
-import Arcade from "@arcgis/core/arcade/Arcade.js";
+import * as arcade from "@arcgis/core/arcade.js";
 
 // Create profile
 const profile = {
@@ -295,13 +295,13 @@ const profile = {
 };
 
 // Compile expression
-const executor = await Arcade.createArcadeExecutor(
+const executor = await arcade.createArcadeExecutor(
   "Round($feature.value * 100, 2)",
   profile
 );
 
 // Execute with feature
-const result = executor.execute({
+const result = await executor.executeAsync({
   $feature: graphic
 });
 
@@ -351,6 +351,11 @@ layer.renderer = {
 ```
 
 > **Tip:** See [arcgis-core-maps skill](../arcgis-core-maps/SKILL.md) for detailed guidance on autocasting vs explicit classes.
+
+## Reference Samples
+
+- `popuptemplate-arcade` - Arcade expressions in PopupTemplates
+- `popuptemplate-arcade-expression-content` - Arcade expression content in popups
 
 ## Common Pitfalls
 

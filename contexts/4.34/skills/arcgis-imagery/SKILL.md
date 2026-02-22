@@ -205,7 +205,7 @@ const hillshadeFunction = new RasterFunction({
   }
 });
 
-imageryLayer.renderingRule = hillshadeFunction;
+imageryLayer.rasterFunction = hillshadeFunction;
 ```
 
 ### Common Rendering Rules
@@ -285,13 +285,28 @@ const imageUrl = imageryLayer.url + "/exportImage?" +
 ```javascript
 await imageryLayer.load();
 
-// Get layer statistics
-const stats = imageryLayer.statistics;
+// Get layer statistics from serviceRasterInfo
+const stats = imageryLayer.serviceRasterInfo.statistics;
 console.log("Min:", stats[0].min);
 console.log("Max:", stats[0].max);
-console.log("Mean:", stats[0].mean);
+console.log("Mean:", stats[0].avg);
 console.log("StdDev:", stats[0].stddev);
 ```
+
+### Imagery Components
+
+| Component | Purpose |
+|-----------|---------|
+| `arcgis-oriented-imagery-viewer` | View and navigate oriented imagery |
+| `arcgis-video-player` | Play video feeds from video services |
+
+## Reference Samples
+
+- `layers-imagerylayer` - Basic ImageryLayer usage
+- `layers-imagery-pixelvalues` - Querying pixel values from imagery
+- `layers-imagery-multidimensional` - Multidimensional imagery data
+- `layers-imagerytilelayer` - ImageryTileLayer usage
+- `layers-imagerytilelayer-cog` - Cloud-Optimized GeoTIFF with ImageryTileLayer
 
 ## Common Pitfalls
 

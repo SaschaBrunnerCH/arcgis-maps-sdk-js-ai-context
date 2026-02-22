@@ -198,12 +198,12 @@ layer.featureEffect = {
 ### Display Filter (Performance Optimization)
 ```javascript
 // Display filter completely hides features (better performance)
-layer.displayFilter = {
+layer.displayFilterInfo = {
   where: "population > 10000"
 };
 
 // Combined with feature effect
-layer.displayFilter = {
+layer.displayFilterInfo = {
   where: "status != 'deleted'"
 };
 
@@ -378,6 +378,14 @@ slider.on("thumb-drag", () => {
 | sepia | `sepia(100%)` | Sepia tone |
 | saturate | `saturate(200%)` | Color saturation |
 | hue-rotate | `hue-rotate(180deg)` | Rotate hue |
+
+## Reference Samples
+
+- `featureeffect-geometry` - Geometry-based feature effects
+- `featureeffect-drop-shadow` - Drop shadow effects on features
+- `intro-effect-layer` - Introduction to layer effects
+- `display-filter` - Display filters with feature effects
+- `featurefilter-attributes` - Attribute-based feature filtering
 
 ## Common Pitfalls
 

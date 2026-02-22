@@ -234,15 +234,11 @@ result.results.forEach(item => {
 ## Credential Persistence
 
 ```javascript
-// Credentials are stored in localStorage by default
-// Disable persistence
-esriId.useSignInPage = false;
-
 // Clear stored credentials
 esriId.destroyCredentials();
 
-// Check for stored credentials on load
-const credentials = esriId.credentials;
+// Find a specific credential
+const credential = esriId.findCredential("https://services.arcgis.com/...");
 ```
 
 ## Handling Authentication Errors
@@ -286,6 +282,11 @@ esriConfig.request.proxyRules.push({
   proxyUrl: "/proxy/"
 });
 ```
+
+## Reference Samples
+
+- `identity-oauth-basic` - Basic OAuth2 authentication setup
+- `identity-oauth-component` - OAuth component-based authentication
 
 ## Common Pitfalls
 
