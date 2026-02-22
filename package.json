@@ -1,6 +1,6 @@
 {
   "name": "@saschabrunnerch/arcgis-maps-sdk-js-ai-context",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Install Agent Skills for ArcGIS Maps SDK for JavaScript development. Compatible with Claude, VS Code, Cursor, and other AI agents.",
   "main": "lib/installer.js",
   "bin": {
