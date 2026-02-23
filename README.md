@@ -1,6 +1,7 @@
 # arcgis-maps-sdk-js-ai-context
 
-> **DISCLAIMER:** This is work in progress and not yet tested extensively. Use at your own risk.
+> [!CAUTION]
+> **This is work in progress and not yet tested extensively. Use at your own risk.**
 
 Install [Agent Skills](https://agentskills.io) for [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/) development. Compatible with Claude, VS Code, Cursor, and other AI agents.
 
@@ -24,7 +25,7 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context <command>
 
 ### Install Agent Skills
 
-Installs 30 Agent Skills directly to `.github/skills/` in your project:
+Installs 31 Agent Skills directly to `.github/skills/` in your project:
 
 ```bash
 # Install for latest SDK version
@@ -48,7 +49,7 @@ your-project/
         │   └── SKILL.md
         ├── arcgis-widgets-ui/
         │   └── SKILL.md
-        └── ... (30 skill directories total)
+        └── ... (31 skill directories total)
 ```
 
 ### List Available Skills
@@ -81,7 +82,7 @@ Available versions can be viewed with the `list` command. If no version is speci
 
 ## Skills Included
 
-The package includes 30 comprehensive Agent Skills covering:
+The package includes 31 comprehensive Agent Skills covering:
 
 | Skill | Description |
 |-------|-------------|
@@ -114,6 +115,7 @@ The package includes 30 comprehensive Agent Skills covering:
 | arcgis-portal-content | Portal items, groups, and content management |
 | arcgis-knowledge-graphs | Knowledge graph integration and link charts |
 | arcgis-utility-networks | Utility network analysis |
+| arcgis-performance | Bundle optimization, lazy loading, memory management, view performance |
 | arcgis-core-utilities | Accessor, Collection, reactiveUtils, intl, and workers |
 
 ## Usage
