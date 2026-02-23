@@ -652,11 +652,63 @@ const editor = new Editor({
 
 ## Common Pitfalls
 
-1. **Editing permissions**: User must have edit permissions on the layer
+1. **Editing permissions**: Calling `applyEdits` on a layer without checking edit capabilities causes silent failures.
+
+   ```javascript
+   // Anti-pattern: calling applyEdits without checking capabilities
+   const layer = new FeatureLayer({ url: "https://services.arcgis.com/.../FeatureServer/0" });
+   await layer.applyEdits({
+     addFeatures: [newFeature]
+   });
+   // May fail silently or throw a cryptic server error
+   ```
+
+   ```javascript
+   // Correct: check capabilities before editing
+   const layer = new FeatureLayer({ url: "https://services.arcgis.com/.../FeatureServer/0" });
+   await layer.load();
+   if (layer.editingEnabled && layer.capabilities?.editing?.supportsAddingFeatures) {
+     await layer.applyEdits({
+       addFeatures: [newFeature]
+     });
+   } else {
+     console.error("Layer does not support adding features");
+   }
+   ```
+
+   **Impact:** The `applyEdits` call fails with a cryptic server error or silently returns an error result that is easy to miss, leaving the user believing the edit was saved when it was not.
 
 2. **Subtype field**: Must match the subtype configuration in the service
 
-3. **Version locking**: Branch versions may lock during editing sessions
+3. **Version locking**: Editing branch-versioned data without proper session management causes version locks.
+
+   ```javascript
+   // Anti-pattern: editing without version management session
+   const layer = new FeatureLayer({ url: "https://services.arcgis.com/.../FeatureServer/0" });
+   layer.gdbVersion = "editor1.design_v1";
+   await layer.applyEdits({ updateFeatures: [updatedFeature] });
+   // Version remains locked, blocking other users
+   ```
+
+   ```javascript
+   // Correct: start and stop version management session
+   const versionManagement = new VersionManagementService({
+     url: "https://services.arcgis.com/.../VersionManagementServer"
+   });
+   const versionName = "editor1.design_v1";
+
+   // Start editing session
+   await versionManagement.startEditing(versionName);
+
+   const layer = new FeatureLayer({ url: "https://services.arcgis.com/.../FeatureServer/0" });
+   layer.gdbVersion = versionName;
+   await layer.applyEdits({ updateFeatures: [updatedFeature] });
+
+   // Stop editing session to release the lock
+   await versionManagement.stopEditing(versionName, true); // true = save edits
+   ```
+
+   **Impact:** The version stays locked after editing, preventing other users from accessing or editing it. Accumulated locks require administrator intervention to release.
 
 4. **Validation expressions**: Must return true/false or error object
 

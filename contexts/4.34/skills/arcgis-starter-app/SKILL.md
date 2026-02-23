@@ -991,3 +991,65 @@ pnpm add -D eslint @eslint/js typescript-eslint eslint-config-prettier eslint-pl
 pnpm run prepare
 pnpm dev
 ```
+
+## Common Pitfalls
+
+1. **API key not configured**: The app references an environment variable that does not exist or is empty.
+
+   ```typescript
+   // Anti-pattern: referencing env var without creating .env file
+   import esriConfig from "@arcgis/core/config";
+   esriConfig.apiKey = import.meta.env.VITE_ARCGIS_API_KEY as string;
+   // .env file is missing or VITE_ARCGIS_API_KEY is empty
+   ```
+
+   ```typescript
+   // Correct: create .env file with a valid API key
+   // .env
+   // VITE_ARCGIS_API_KEY=AAPTxy...your_actual_key_here
+
+   import esriConfig from "@arcgis/core/config";
+   esriConfig.apiKey = import.meta.env.VITE_ARCGIS_API_KEY as string;
+   ```
+
+   **Impact:** Without a valid API key, basemap tiles and location services (geocoding, routing) fail to load. The map renders as a grey or blank canvas with no visible error in the UI.
+
+2. **Wrong moduleResolution in tsconfig**: Using `"node"` instead of `"node16"` or `"bundler"` prevents TypeScript from resolving package exports.
+
+   ```json
+   // Anti-pattern: moduleResolution "node" cannot resolve package exports
+   {
+     "compilerOptions": {
+       "moduleResolution": "node"
+     }
+   }
+   ```
+
+   ```json
+   // Correct: use "node16" or "bundler" for package exports support
+   {
+     "compilerOptions": {
+       "moduleResolution": "bundler"
+     }
+   }
+   ```
+
+   **Impact:** TypeScript cannot resolve `@arcgis/map-components` subpath exports (e.g., `@arcgis/map-components/dist/components/arcgis-map`). The build fails with "Cannot find module" errors at compile time.
+
+3. **Calcite assets not configured**: Calcite icons and components require the asset path to be set at runtime.
+
+   ```typescript
+   // Anti-pattern: importing Calcite components without setting asset path
+   import "@esri/calcite-components/dist/components/calcite-shell";
+   // No setAssetPath call - icons and internal assets fail to load
+   ```
+
+   ```typescript
+   // Correct: set the Calcite asset path before using components
+   import "@esri/calcite-components/dist/components/calcite-shell";
+   import { setAssetPath as setCalciteAssetPath } from "@esri/calcite-components/dist/components";
+
+   setCalciteAssetPath("https://js.arcgis.com/calcite-components/3.3.3/assets");
+   ```
+
+   **Impact:** Calcite icons render as empty boxes, action buttons show no icons, and some components (like `calcite-shell`) may not lay out correctly because their internal assets cannot be fetched.

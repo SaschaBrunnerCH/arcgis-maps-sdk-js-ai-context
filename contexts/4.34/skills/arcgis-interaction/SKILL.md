@@ -426,9 +426,72 @@ const graphic = new Graphic({
 
 2. **Hit test returns nothing**: Check if layers are included/excluded correctly
 
-3. **Highlight not visible**: Make sure to store the highlight handle and call `remove()` before creating new highlights
+3. **Highlight handle leak**: Creating new highlights without removing previous ones causes memory leaks.
+
+   ```javascript
+   // Anti-pattern: creating highlights without cleaning up previous ones
+   view.on("pointer-move", async (event) => {
+     const response = await view.hitTest(event);
+     if (response.results.length > 0) {
+       const feature = response.results[0].graphic;
+       // New highlight created every pointer-move - old ones never removed
+       layerView.highlight(feature);
+     }
+   });
+   ```
+
+   ```javascript
+   // Correct: store handle and remove before creating a new highlight
+   let highlightHandle = null;
+
+   view.on("pointer-move", async (event) => {
+     const response = await view.hitTest(event);
+     // Remove previous highlight
+     if (highlightHandle) {
+       highlightHandle.remove();
+       highlightHandle = null;
+     }
+     if (response.results.length > 0) {
+       const feature = response.results[0].graphic;
+       highlightHandle = layerView.highlight(feature);
+     }
+   });
+   ```
+
+   **Impact:** Each pointer-move adds another highlight without removing the previous one. Highlights accumulate visually and in memory, causing performance degradation and eventually freezing the browser.
 
 4. **applyEdits fails**: Ensure layer is editable and user has edit permissions
 
-5. **Events fire multiple times**: Remove event handlers when no longer needed
+5. **Events fire multiple times**: Adding event listeners repeatedly without cleanup causes handler accumulation.
+
+   ```javascript
+   // Anti-pattern: adding listeners in a function that gets called multiple times
+   function setupInteraction() {
+     view.on("click", async (event) => {
+       const result = await view.hitTest(event);
+       console.log("Clicked:", result);
+     });
+   }
+   setupInteraction(); // First handler
+   setupInteraction(); // Second handler - now click fires twice
+   setupInteraction(); // Third handler - now click fires three times
+   ```
+
+   ```javascript
+   // Correct: store handle and remove before re-adding, or add once
+   let clickHandle = null;
+
+   function setupInteraction() {
+     // Remove previous handler if it exists
+     if (clickHandle) {
+       clickHandle.remove();
+     }
+     clickHandle = view.on("click", async (event) => {
+       const result = await view.hitTest(event);
+       console.log("Clicked:", result);
+     });
+   }
+   ```
+
+   **Impact:** Each call to the setup function adds another listener. Clicks fire multiple duplicate callbacks, causing repeated API calls, flickering UI updates, and steadily growing memory usage.
 

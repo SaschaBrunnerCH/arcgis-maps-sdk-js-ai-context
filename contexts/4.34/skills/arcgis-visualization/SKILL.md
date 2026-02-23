@@ -508,13 +508,32 @@ layer.renderer = new SimpleRenderer({
 
 ## Common Pitfalls
 
-1. **Missing type property**: Always include `type` for autocasting
+1. **Missing type property**: Both renderers and symbols require a `type` property for autocasting to work.
+
    ```javascript
-   // Wrong
-   { color: "red" }
-   // Correct
-   { type: "simple-marker", color: "red" }
+   // Anti-pattern: missing type on renderer and symbol
+   layer.renderer = {
+     symbol: {
+       color: "red",
+       size: 8
+     }
+   };
+   // No type on renderer or symbol - autocasting fails silently
    ```
+
+   ```javascript
+   // Correct: include type at both renderer and symbol level
+   layer.renderer = {
+     type: "simple",
+     symbol: {
+       type: "simple-marker",
+       color: "red",
+       size: 8
+     }
+   };
+   ```
+
+   **Impact:** Without the `type` property, the ArcGIS autocasting system cannot determine which class to create. The renderer or symbol is silently ignored, and features render with the default symbology or not at all.
 
 2. **Color formats**: Colors can be hex, named, RGB array, or RGBA array
    ```javascript
@@ -524,7 +543,41 @@ layer.renderer = new SimpleRenderer({
    color: [255, 0, 0, 0.5] // With transparency
    ```
 
-3. **Visual variables require numeric fields**: Ensure the field contains numbers
+3. **Visual variables require numeric fields**: Using a string field for a size or color visual variable produces no variation.
+
+   ```javascript
+   // Anti-pattern: using a string/text field for size visual variable
+   layer.renderer = {
+     type: "simple",
+     symbol: { type: "simple-marker", color: "blue" },
+     visualVariables: [{
+       type: "size",
+       field: "city_name", // String field - cannot map to size
+       minDataValue: 0,
+       maxDataValue: 100,
+       minSize: 4,
+       maxSize: 40
+     }]
+   };
+   ```
+
+   ```javascript
+   // Correct: use a numeric field for size visual variable
+   layer.renderer = {
+     type: "simple",
+     symbol: { type: "simple-marker", color: "blue" },
+     visualVariables: [{
+       type: "size",
+       field: "population", // Numeric field - maps correctly to size
+       minDataValue: 10000,
+       maxDataValue: 1000000,
+       minSize: 4,
+       maxSize: 40
+     }]
+   };
+   ```
+
+   **Impact:** All features render at the same default size with no visual variation. No error is thrown, making it difficult to diagnose why the visualization appears flat and uniform.
 
 4. **Label expressions are Arcade**: Use Arcade syntax, not JavaScript
 

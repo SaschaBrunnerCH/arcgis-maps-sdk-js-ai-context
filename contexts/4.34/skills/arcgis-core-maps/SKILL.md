@@ -733,18 +733,67 @@ reactiveUtils.when(
 
 ## Common Pitfalls
 
-1. **Missing CSS for Core API**: The Core API requires `main.css`:
+1. **Missing CSS for Core API**: The Core API requires `main.css` for widgets and popups to render correctly.
+
    ```html
+   <!-- Anti-pattern: no CSS import -->
+   <script type="module">
+     import MapView from "@arcgis/core/views/MapView";
+     import Map from "@arcgis/core/Map";
+     const view = new MapView({ container: "viewDiv", map: new Map({ basemap: "topo-vector" }) });
+   </script>
+   ```
+
+   ```html
+   <!-- Correct: include the CSS -->
    <link rel="stylesheet" href="https://js.arcgis.com/4.34/esri/themes/light/main.css" />
+   <script type="module">
+     import MapView from "@arcgis/core/views/MapView";
+     import Map from "@arcgis/core/Map";
+     const view = new MapView({ container: "viewDiv", map: new Map({ basemap: "topo-vector" }) });
+   </script>
    ```
 
-2. **Not awaiting viewOnReady()**: Always wait for the view before accessing properties:
+   **Impact:** The map itself renders, but widgets (Zoom, Legend, Search) and popups appear unstyled or completely broken. Layouts collapse and controls become unusable.
+
+2. **Not awaiting viewOnReady()**: View properties are not available until the view is ready.
+
    ```javascript
-   await mapElement.viewOnReady();
-   const view = mapElement.view; // Safe to access now
+   // Anti-pattern: accessing view before it is ready
+   const mapElement = document.querySelector("arcgis-map");
+   const view = mapElement.view; // undefined - view is not ready yet
+   view.goTo({ center: [-118, 34] }); // TypeError: Cannot read properties of undefined
    ```
 
-3. **Coordinate order**: ArcGIS uses `[longitude, latitude]`, not `[latitude, longitude]`
+   ```javascript
+   // Correct: wait for the view to be ready
+   const mapElement = document.querySelector("arcgis-map");
+   await mapElement.viewOnReady();
+   const view = mapElement.view; // MapView instance, safe to use
+   view.goTo({ center: [-118, 34] });
+   ```
+
+   **Impact:** `view` is `null` or `undefined` before the component initializes, causing runtime errors on any property access or method call.
+
+3. **Coordinate order**: ArcGIS uses `[longitude, latitude]`, not `[latitude, longitude]`.
+
+   ```javascript
+   // Anti-pattern: lat/lng order (Google Maps convention)
+   const view = new MapView({
+     center: [34.05, -118.24], // lat first, lng second - WRONG
+     zoom: 12
+   });
+   ```
+
+   ```javascript
+   // Correct: lng/lat order (ArcGIS convention)
+   const view = new MapView({
+     center: [-118.24, 34.05], // lng first, lat second
+     zoom: 12
+   });
+   ```
+
+   **Impact:** The map centers on the wrong location, often in the middle of the ocean or on a different continent, with no error message to indicate the mistake.
 
 4. **Missing viewDiv height**: Ensure the container has height:
    ```css

@@ -292,11 +292,48 @@ esriConfig.request.proxyRules.push({
 
 1. **App ID registration**: App ID must be registered with correct redirect URIs
 
-2. **Popup blockers**: OAuth popups may be blocked - use redirect flow as fallback
+2. **Popup blockers**: OAuth popup-based sign-in fails on mobile browsers.
+
+   ```javascript
+   // Anti-pattern: using popup flow on mobile
+   OAuthInfo.create({
+     appId: "YOUR_APP_ID",
+     popup: true // Blocked by most mobile browsers
+   });
+   ```
+
+   ```javascript
+   // Correct: use redirect flow for mobile, popup for desktop
+   const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+   OAuthInfo.create({
+     appId: "YOUR_APP_ID",
+     popup: !isMobile // Redirect flow on mobile, popup on desktop
+   });
+   ```
+
+   **Impact:** On mobile browsers (Safari, Chrome for iOS/Android), the OAuth popup is silently blocked. The user sees no sign-in dialog and cannot authenticate, with no error message explaining why.
 
 3. **Token expiration**: Tokens expire - handle refresh or re-authentication
 
 4. **CORS errors**: Configure trusted servers or use proxy for cross-origin
 
-5. **Portal URL mismatch**: Ensure portal URL matches exactly (trailing slashes matter)
+5. **Portal URL trailing slash**: A trailing slash in the portal URL causes token validation to fail.
+
+   ```javascript
+   // Anti-pattern: portal URL with trailing slash
+   const portal = new Portal({
+     url: "https://myorg.maps.arcgis.com/" // Trailing slash
+   });
+   await portal.load(); // Token validation may fail
+   ```
+
+   ```javascript
+   // Correct: portal URL without trailing slash
+   const portal = new Portal({
+     url: "https://myorg.maps.arcgis.com" // No trailing slash
+   });
+   await portal.load();
+   ```
+
+   **Impact:** The portal URL with a trailing slash does not match the token's server URL during validation. Authentication silently fails, or the user is prompted to sign in repeatedly because the token is never accepted.
 

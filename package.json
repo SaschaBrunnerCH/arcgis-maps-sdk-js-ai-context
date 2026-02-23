@@ -12,7 +12,8 @@
     "lib"
   ],
   "scripts": {
-    "test": "node bin/cli.js --help"
+    "test": "node bin/cli.js --help",
+    "validate": "node scripts/validate-skills.js"
   },
   "keywords": [
     "arcgis",

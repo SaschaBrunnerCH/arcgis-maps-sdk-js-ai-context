@@ -579,11 +579,76 @@ layer.renderer = renderer;
 
 1. **CORS errors with GeoJSON**: GeoJSON URLs must be CORS-enabled or use a proxy
 
-2. **Missing outFields**: Specify `outFields: ["*"]` to access all attributes
+2. **Missing outFields**: Queries return no attribute values unless `outFields` is specified.
 
-3. **Not waiting for layer load**: Always `await featureLayer.load()` before accessing properties like `fields`
+   ```javascript
+   // Anti-pattern: querying without outFields
+   const results = await featureLayer.queryFeatures({
+     where: "population > 100000",
+     returnGeometry: true
+   });
+   console.log(results.features[0].attributes.name); // undefined
+   ```
+
+   ```javascript
+   // Correct: specify outFields to include desired attributes
+   const results = await featureLayer.queryFeatures({
+     where: "population > 100000",
+     returnGeometry: true,
+     outFields: ["name", "population", "state"]
+   });
+   console.log(results.features[0].attributes.name); // "Los Angeles"
+   ```
+
+   **Impact:** Feature attributes come back as `undefined` or `null`. The query succeeds but the response contains no usable attribute data, leading to silent data bugs.
+
+3. **Not waiting for layer load**: Layer metadata (fields, extent, renderer) is unavailable until the layer finishes loading.
+
+   ```javascript
+   // Anti-pattern: accessing properties before load
+   const layer = new FeatureLayer({ url: "https://services.arcgis.com/.../FeatureServer/0" });
+   console.log(layer.fields); // null - layer has not loaded yet
+   console.log(layer.fullExtent); // null
+   ```
+
+   ```javascript
+   // Correct: await layer.load() first
+   const layer = new FeatureLayer({ url: "https://services.arcgis.com/.../FeatureServer/0" });
+   await layer.load();
+   console.log(layer.fields); // Array of Field objects
+   console.log(layer.fullExtent); // Extent object
+   ```
+
+   **Impact:** `fields` is `null` or an empty array, `fullExtent` is `null`, and any code that depends on layer metadata throws errors or silently fails.
 
 4. **Wrong layer for MapView vs SceneView**: Some layers only work in 3D (SceneLayer, IntegratedMeshLayer)
 
-5. **Spatial reference mismatch**: Ensure layer data matches view's spatial reference
+5. **Spatial reference mismatch**: Adding layers with a different spatial reference than the view without projection support.
+
+   ```javascript
+   // Anti-pattern: adding a layer in a different SR without handling projection
+   const view = new MapView({
+     spatialReference: { wkid: 4326 } // WGS84
+   });
+   const layer = new FeatureLayer({
+     url: "https://services.arcgis.com/.../FeatureServer/0" // Data in Web Mercator (3857)
+   });
+   view.map.add(layer); // Features may render in wrong location
+   ```
+
+   ```javascript
+   // Correct: match spatial references or load the projection engine
+   import * as projection from "@arcgis/core/geometry/projection";
+   await projection.load();
+
+   const view = new MapView({
+     spatialReference: { wkid: 4326 }
+   });
+   const layer = new FeatureLayer({
+     url: "https://services.arcgis.com/.../FeatureServer/0"
+   });
+   view.map.add(layer); // Projection engine handles the transformation
+   ```
+
+   **Impact:** Features appear in the wrong location, are offset by thousands of kilometers, or do not display at all when spatial references are incompatible.
 

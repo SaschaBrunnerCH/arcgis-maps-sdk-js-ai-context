@@ -595,13 +595,48 @@ const featureTable = new FeatureTable({
 
 ## Common Pitfalls
 
-1. **Missing reference-element**: When placing components outside the map, use `reference-element` attribute
+1. **Missing reference-element**: Components placed outside the `<arcgis-map>` tag cannot find the view without an explicit reference.
+
+   ```html
+   <!-- Anti-pattern: component outside arcgis-map with no reference -->
+   <arcgis-map id="myMap" basemap="topo-vector"></arcgis-map>
+   <arcgis-search></arcgis-search> <!-- Cannot find the view, does not render -->
+   ```
+
+   ```html
+   <!-- Correct: use reference-element to link to the map -->
+   <arcgis-map id="myMap" basemap="topo-vector"></arcgis-map>
+   <arcgis-search reference-element="myMap"></arcgis-search>
+   ```
+
+   **Impact:** The component cannot discover the associated view. It either does not render at all, renders in a broken state, or throws an error about a missing view reference.
 
 2. **Slot names are specific**: Use exact slot names (`top-left`, not `topleft`)
 
 3. **Calcite CSS not loading**: Ensure Calcite script is loaded before using Calcite components
 
-4. **Widget container conflicts**: Don't add the same widget to both a container and view.ui
+4. **Widget container conflicts**: Do not add the same widget to both a DOM container element and `view.ui`.
+
+   ```javascript
+   // Anti-pattern: widget added to both a container div AND view.ui
+   const legend = new Legend({
+     view: view,
+     container: "legendDiv" // Renders into the DOM element
+   });
+   view.ui.add(legend, "bottom-right"); // Also adds to the view UI
+   ```
+
+   ```javascript
+   // Correct: pick one placement strategy
+   // Option A: Let view.ui manage placement
+   const legend = new Legend({ view: view });
+   view.ui.add(legend, "bottom-right");
+
+   // Option B: Place in a specific DOM element
+   const legend = new Legend({ view: view, container: "legendDiv" });
+   ```
+
+   **Impact:** The widget renders twice on the page, or the layout breaks because the view UI and the container element compete for control of the widget's DOM node.
 
 5. **Dark/light mode mismatch**: Add `calcite-mode-light` or `calcite-mode-dark` class to body
 
