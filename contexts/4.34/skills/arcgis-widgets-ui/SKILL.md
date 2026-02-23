@@ -58,8 +58,19 @@ Use this skill when building user interfaces with widgets, Map Components, and C
 | `arcgis-area-measurement-2d` | 2D area measurement |
 | `arcgis-direct-line-measurement-3d` | 3D line measurement |
 | `arcgis-area-measurement-3d` | 3D area measurement |
+| `arcgis-directional-pad` | Directional pad for camera navigation |
+| `arcgis-elevation-profile` | Elevation profile along a path |
+| `arcgis-line-of-sight` | Line of sight analysis (3D) |
+| `arcgis-slice` | Slice through 3D data |
+| `arcgis-shadow-cast` | Shadow cast analysis (3D) |
+| `arcgis-oriented-imagery-viewer` | View oriented imagery |
+| `arcgis-video-player` | Play video feeds from video layers |
+| `arcgis-link-chart` | Link chart visualization |
+| `arcgis-link-chart-layout-switcher` | Switch link chart layouts |
+| `arcgis-version-management` | Manage geodatabase versions |
 | `arcgis-utility-network-trace` | Utility network tracing |
 | `arcgis-utility-network-associations` | Utility associations |
+| `arcgis-utility-network-validate-topology` | Validate utility network topology |
 
 > **Note:** Not all widgets have component equivalents yet. Histogram and some specialized widgets only have Core API versions. FeatureForm has the `arcgis-feature-form` component.
 

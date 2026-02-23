@@ -517,6 +517,42 @@ if (form.valid) {
 
 ## Complete Example
 
+### Map Components (Recommended)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="module" src="https://js.arcgis.com/calcite-components/3.3.3/calcite.esm.js"></script>
+  <script src="https://js.arcgis.com/4.34/"></script>
+  <script type="module" src="https://js.arcgis.com/4.34/map-components/"></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+  </style>
+</head>
+<body>
+  <arcgis-map basemap="streets-navigation-vector">
+    <arcgis-zoom slot="top-left"></arcgis-zoom>
+    <arcgis-editor slot="top-right"></arcgis-editor>
+  </arcgis-map>
+
+  <script type="module">
+    import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
+
+    const mapElement = document.querySelector("arcgis-map");
+    await mapElement.viewOnReady();
+
+    const layer = new FeatureLayer({
+      url: "https://services.arcgis.com/.../FeatureServer/0"
+    });
+    mapElement.map.add(layer);
+  </script>
+</body>
+</html>
+```
+
+### Core API
+
 ```html
 <!DOCTYPE html>
 <html>
@@ -525,7 +561,6 @@ if (form.valid) {
   <script src="https://js.arcgis.com/4.34/"></script>
   <style>
     html, body, #viewDiv { height: 100%; margin: 0; }
-    #formPanel { position: absolute; top: 10px; right: 10px; width: 300px; }
   </style>
   <script type="module">
     import Map from "@arcgis/core/Map.js";

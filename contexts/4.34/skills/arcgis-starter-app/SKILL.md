@@ -7,6 +7,82 @@ description: Scaffold ArcGIS Maps SDK applications with TypeScript and Vite. Inc
 
 Use this skill to create ArcGIS Maps SDK for JavaScript applications with TypeScript and Vite. Choose between a minimal setup for quick prototyping or a production-ready configuration with full tooling.
 
+## Prerequisites
+
+- **ArcGIS account**: An [ArcGIS Location Platform](https://developers.arcgis.com/), [ArcGIS Online](https://www.arcgis.com/), or [ArcGIS Enterprise](https://enterprise.arcgis.com/) account is required to access content and services.
+- **Access token**: Create an access token through your portal with appropriate privileges (basemaps, geocoding, routing, etc.) and configure allowed referrers for production use.
+- **Node.js**: LTS version (20+) with npm or pnpm.
+
+> **Note:** As of v4.34, CSS for Map Components loads automatically when using npm — no manual CSS import for `@arcgis/map-components` is needed. The `@arcgis/core` CSS import is only required when using Core API widgets directly.
+
+## Framework Integration
+
+### React 19
+
+Map Components are web components (custom elements). In React 19, use them directly and attach event listeners with the `on` prefix:
+
+```tsx
+import "@arcgis/map-components/dist/components/arcgis-map";
+import "@arcgis/map-components/dist/components/arcgis-zoom";
+
+function App() {
+  return (
+    <arcgis-map
+      basemap="topo-vector"
+      center="-118.24,34.05"
+      zoom={12}
+      onarcgisViewReadyChange={(e: CustomEvent) => {
+        const { view } = e.detail;
+        console.log("View ready:", view);
+      }}
+    >
+      <arcgis-zoom slot="top-left"></arcgis-zoom>
+    </arcgis-map>
+  );
+}
+```
+
+> **Important:** Use event listeners (e.g., `onarcgisViewReadyChange`) rather than calling methods directly on the element ref, since the component may not be defined yet at render time.
+
+### Angular
+
+Add `CUSTOM_ELEMENTS_SCHEMA` to your module or standalone component so Angular recognizes non-Angular elements:
+
+```typescript
+import { CUSTOM_ELEMENTS_SCHEMA, Component } from "@angular/core";
+
+@Component({
+  selector: "app-map",
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <arcgis-map basemap="topo-vector" center="-118.24,34.05" [zoom]="12">
+      <arcgis-zoom slot="top-left"></arcgis-zoom>
+    </arcgis-map>
+  `,
+})
+export class MapComponent {}
+```
+
+Import the Map Components CSS explicitly in your root stylesheet:
+
+```css
+/* styles.css */
+@import "@arcgis/map-components/dist/components/arcgis-map/arcgis-map.css";
+```
+
+### TypeScript Configuration
+
+Set `moduleResolution` to `"node16"` or `"bundler"` in `tsconfig.json` to properly resolve `@arcgis/map-components` package exports:
+
+```json
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler"
+  }
+}
+```
+
 ## Minimal Setup
 
 ### Project Structure
