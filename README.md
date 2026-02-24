@@ -25,7 +25,7 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context <command>
 
 ### Install Agent Skills
 
-Installs 31 Agent Skills directly to `.github/skills/` in your project:
+Installs Agent Skills directly to `.github/skills/` in your project (35 skills for SDK 5.0, 31 for SDK 4.34):
 
 ```bash
 # Install for latest SDK version
@@ -49,7 +49,7 @@ your-project/
         │   └── SKILL.md
         ├── arcgis-widgets-ui/
         │   └── SKILL.md
-        └── ... (31 skill directories total)
+        └── ... (35 skill directories for SDK 5.0)
 ```
 
 ### List Available Skills
@@ -76,13 +76,14 @@ npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills --sdk 4.34
 
 Available versions can be viewed with the `list` command. If no version is specified, the latest available version is used.
 
-| SDK Version | Status |
-|-------------|--------|
-| 4.34 | Available |
+| SDK Version | Skills | Status |
+|-------------|--------|--------|
+| 5.0 | 35 | Available (latest) |
+| 4.34 | 31 | Available |
 
 ## Skills Included
 
-The package includes 31 comprehensive Agent Skills covering:
+The package includes 35 Agent Skills for SDK 5.0 (31 for SDK 4.34) covering:
 
 | Skill | Description |
 |-------|-------------|
@@ -116,6 +117,10 @@ The package includes 31 comprehensive Agent Skills covering:
 | arcgis-knowledge-graphs | Knowledge graph integration and link charts |
 | arcgis-utility-networks | Utility network analysis |
 | arcgis-performance | Bundle optimization, lazy loading, memory management, view performance |
+| arcgis-ai-components | AI-powered map chat via `arcgis-ai-chat` and `arcgis-ai-toolbar` (5.0 only) |
+| arcgis-charts | Interactive charts from layer data via `@arcgis/charts-components` (5.0 only) |
+| arcgis-coding-components | Arcade expression editor via `@arcgis/coding-components` (5.0 only) |
+| arcgis-embeddable-maps | Lightweight self-contained map embeds via `@arcgis/embeddable-components` (5.0 only) |
 | arcgis-core-utilities | Accessor, Collection, reactiveUtils, intl, and workers |
 
 ## Usage
