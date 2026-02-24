@@ -5,7 +5,10 @@
 const fs = require("fs");
 const path = require("path");
 
-const SKILLS_DIR = path.join(__dirname, "..", "contexts", "4.34", "skills");
+const SKILLS_DIRS = [
+  { version: "4.34", path: path.join(__dirname, "..", "contexts", "4.34", "skills") },
+  { version: "5.0", path: path.join(__dirname, "..", "contexts", "5.0", "skills") },
+];
 const PASS = "\x1b[32m\u2713\x1b[0m";
 const FAIL = "\x1b[31m\u2717\x1b[0m";
 
@@ -31,7 +34,7 @@ function parseFrontmatter(content) {
   return { yaml, body };
 }
 
-function validateSkill(skillDir) {
+function validateSkill(skillDir, version, allSkillNames) {
   const dirName = path.basename(skillDir);
   const errors = [];
 
@@ -75,6 +78,45 @@ function validateSkill(skillDir) {
     errors.push("No content after frontmatter");
   }
 
+  // Check line count (target: 300-1100)
+  const lineCount = content.split("\n").length;
+  if (lineCount < 250) {
+    errors.push("File too short (" + lineCount + " lines, target 300-1100)");
+  } else if (lineCount > 1200) {
+    errors.push("File too long (" + lineCount + " lines, target 300-1100)");
+  }
+
+  // Version-specific checks
+  if (version === "5.0") {
+    // Check for 4.34 CDN URL leaks
+    if (content.includes("js.arcgis.com/4.")) {
+      errors.push("Contains old 4.x CDN URL (should use 5.0)");
+    }
+    // Check for version 4.34 references in text
+    if (content.includes("4.34") && !content.includes("no 4.x equivalent") && !content.includes("4.x")) {
+      errors.push("Contains explicit '4.34' version reference");
+    }
+  }
+
+  // Validate Related Skills cross-references
+  if (allSkillNames) {
+    const relatedMatch = content.match(/## Related Skills\n([\s\S]*?)(?=\n## |\n$|$)/);
+    if (relatedMatch) {
+      const relatedSection = relatedMatch[1];
+      const skillRefs = relatedSection.match(/`(arcgis-[a-z0-9-]+)`/g);
+      if (skillRefs) {
+        for (const ref of skillRefs) {
+          const refName = ref.replace(/`/g, "");
+          // Skip known component names that aren't skills
+          if (["arcgis-map", "arcgis-scene", "arcgis-placement"].includes(refName)) continue;
+          if (!allSkillNames.includes(refName)) {
+            errors.push("Related Skills references non-existent skill: " + refName);
+          }
+        }
+      }
+    }
+  }
+
   // Check AGENTS.md if it exists
   const agentsPath = path.join(skillDir, "AGENTS.md");
   if (fs.existsSync(agentsPath)) {
@@ -87,34 +129,43 @@ function validateSkill(skillDir) {
   return { dirName, errors };
 }
 
-function main() {
-  if (!fs.existsSync(SKILLS_DIR)) {
-    console.error("Skills directory not found: " + SKILLS_DIR);
-    process.exit(1);
+function validateVersion(versionInfo) {
+  if (!fs.existsSync(versionInfo.path)) {
+    console.log("  Skills directory not found: " + versionInfo.path + " (skipping)");
+    return { passed: 0, failed: 0, total: 0 };
   }
 
-  const entries = fs.readdirSync(SKILLS_DIR, { withFileTypes: true });
+  const entries = fs.readdirSync(versionInfo.path, { withFileTypes: true });
   const skillDirs = entries
     .filter(function (e) {
       return e.isDirectory();
     })
     .map(function (e) {
-      return path.join(SKILLS_DIR, e.name);
+      return path.join(versionInfo.path, e.name);
     })
     .sort();
 
   if (skillDirs.length === 0) {
-    console.error("No skill directories found in " + SKILLS_DIR);
-    process.exit(1);
+    console.log("  No skill directories found in " + versionInfo.path);
+    return { passed: 0, failed: 0, total: 0 };
   }
 
-  console.log("Validating " + skillDirs.length + " skills...\n");
+  // Collect all skill names for cross-reference validation
+  const allSkillNames = entries
+    .filter(function (e) {
+      return e.isDirectory();
+    })
+    .map(function (e) {
+      return e.name;
+    });
+
+  console.log("Validating " + skillDirs.length + " skills (v" + versionInfo.version + ")...\n");
 
   let totalPassed = 0;
   let totalFailed = 0;
 
   for (const skillDir of skillDirs) {
-    const result = validateSkill(skillDir);
+    const result = validateSkill(skillDir, versionInfo.version, allSkillNames);
 
     if (result.errors.length === 0) {
       console.log("  " + PASS + "  " + result.dirName);
@@ -129,16 +180,46 @@ function main() {
   }
 
   console.log(
-    "\nResults: " +
+    "\nResults (v" + versionInfo.version + "): " +
       totalPassed +
       " passed, " +
       totalFailed +
       " failed, " +
       skillDirs.length +
-      " total"
+      " total\n"
   );
 
-  if (totalFailed > 0) {
+  return { passed: totalPassed, failed: totalFailed, total: skillDirs.length };
+}
+
+function main() {
+  let grandPassed = 0;
+  let grandFailed = 0;
+  let grandTotal = 0;
+
+  for (const versionInfo of SKILLS_DIRS) {
+    const result = validateVersion(versionInfo);
+    grandPassed += result.passed;
+    grandFailed += result.failed;
+    grandTotal += result.total;
+  }
+
+  if (grandTotal === 0) {
+    console.error("No skills found in any version directory");
+    process.exit(1);
+  }
+
+  console.log(
+    "=== Grand Total: " +
+      grandPassed +
+      " passed, " +
+      grandFailed +
+      " failed, " +
+      grandTotal +
+      " skills ==="
+  );
+
+  if (grandFailed > 0) {
     process.exit(1);
   }
 }
