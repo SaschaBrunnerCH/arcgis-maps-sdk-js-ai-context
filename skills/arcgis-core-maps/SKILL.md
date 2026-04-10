@@ -301,30 +301,6 @@ const view = new SceneView({
 });
 ```
 
-## Video View Container
-
-The `arcgis-video` component is a third view container alongside `arcgis-map` and `arcgis-scene`, used for displaying video feeds from video services.
-
-### Map Component
-
-```html
-<arcgis-video>
-  <arcgis-zoom slot="top-left"></arcgis-zoom>
-</arcgis-video>
-```
-
-```javascript
-import "@arcgis/map-components/dist/components/arcgis-video";
-
-const videoElement = document.querySelector("arcgis-video");
-videoElement?.addEventListener("arcgisViewReadyChange", (event) => {
-  const { view } = event.detail;
-  console.log("Video view ready:", view);
-});
-```
-
-> **Note:** `arcgis-video` supports the same position slots as `arcgis-map` and `arcgis-scene`: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `top-start`, `top-end`, `bottom-start`, `bottom-end`.
-
 ## Loading WebMaps and WebScenes
 
 ### WebMap (2D)
