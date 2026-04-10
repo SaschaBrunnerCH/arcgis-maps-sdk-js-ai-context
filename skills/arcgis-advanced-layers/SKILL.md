@@ -1,6 +1,6 @@
 ---
 name: arcgis-advanced-layers
-description: Work with advanced layer types including WMS, WFS, WMTS, OGCFeatureLayer, KMLLayer, MapImageLayer, CatalogLayer, and MediaLayer. Use for OGC services, server-side rendering, and georeferenced media content.
+description: Work with advanced layer types including WMS, WFS, WMTS, OGCFeatureLayer, KMLLayer, MapImageLayer, CatalogLayer, MediaLayer, and VideoLayer. Use for OGC services, server-side rendering, georeferenced media content, and live video feeds from ArcGIS Video Server.
 ---
 
 # ArcGIS Advanced Layers
@@ -49,6 +49,7 @@ const MapImageLayer = await $arcgis.import(
 | MapImageLayer   | Server-rendered imagery           | ArcGIS MapServer       |
 | CatalogLayer    | Collection of layers              | ArcGIS Catalog Service |
 | MediaLayer      | Georeferenced images, video, GIFs | Local/remote media     |
+| VideoLayer      | Live video feeds                  | ArcGIS Video Server    |
 
 ## WMSLayer (Web Map Service)
 
@@ -746,6 +747,52 @@ mediaLayerView.interactive = true;
 // Disable when done
 mediaLayerView.interactive = false;
 ```
+
+## VideoLayer
+
+Display live video feeds from an ArcGIS Video Server. `VideoLayer` extends `Layer` and is added to a Map like any other layer. Pair it with the `arcgis-video-player` widget (see `arcgis-widgets-advanced`) for playback controls.
+
+### Basic VideoLayer
+
+```javascript
+import VideoLayer from "@arcgis/core/layers/VideoLayer.js";
+
+const videoLayer = new VideoLayer({
+  url: "https://your-server.com/arcgis/rest/services/VideoService/VideoServer",
+});
+
+map.add(videoLayer);
+```
+
+### With VideoPlayer Widget
+
+```html
+<arcgis-map basemap="streets-vector">
+  <arcgis-video-player slot="top-right"></arcgis-video-player>
+</arcgis-map>
+```
+
+```javascript
+import VideoLayer from "@arcgis/core/layers/VideoLayer.js";
+
+const viewElement = document.querySelector("arcgis-map");
+const videoPlayer = document.querySelector("arcgis-video-player");
+
+await viewElement.viewOnReady();
+
+const videoLayer = new VideoLayer({
+  url: "https://your-server.com/arcgis/rest/services/VideoService/VideoServer",
+});
+
+viewElement.map.add(videoLayer);
+videoPlayer.layer = videoLayer;
+```
+
+### Limitations
+
+- Only supported in 2D `MapView` — not available in 3D `SceneView`
+- Not supported on macOS or iOS devices
+- Requires a valid ArcGIS Video Server endpoint (not a generic video file URL — use `MediaLayer` with `VideoElement` for local or remote video files)
 
 ## Complete Example
 
