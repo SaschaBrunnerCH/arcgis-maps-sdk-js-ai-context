@@ -1,19 +1,18 @@
 {
-  "name": "@saschabrunnerch/arcgis-maps-sdk-js-ai-context",
-  "version": "0.6.0",
-  "description": "Install Agent Skills for ArcGIS Maps SDK for JavaScript development. Compatible with Claude, VS Code, Cursor, and other AI agents.",
-  "main": "lib/installer.js",
-  "bin": {
-    "arcgis-maps-sdk-js-ai-context": "bin/cli.js"
-  },
-  "files": [
-    "bin",
-    "contexts",
-    "lib"
-  ],
+  "name": "arcgis-maps-sdk-js-ai-context",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Agent Skills for ArcGIS Maps SDK for JavaScript development",
   "scripts": {
-    "test": "node bin/cli.js --help",
-    "validate": "node scripts/validate-skills.js"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "spellcheck": "cspell \"**/*.md\" --no-progress",
+    "lint:markdown": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+    "validate:skills": "node scripts/validate-skills.js",
+    "check": "npm run format:check && npm run spellcheck && npm run lint:markdown && npm run validate:skills",
+    "setup": "node scripts/setup-hooks.js",
+    "postinstall": "node scripts/setup-hooks.js"
   },
   "keywords": [
     "arcgis",
@@ -25,10 +24,7 @@
     "ai",
     "skills",
     "maps",
-    "javascript",
-    "context",
-    "assistant",
-    "anthropic"
+    "javascript"
   ],
   "author": "Sascha Brunner",
   "license": "MIT",
@@ -40,7 +36,9 @@
     "url": "https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context/issues"
   },
   "homepage": "https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context#readme",
-  "engines": {
-    "node": ">=14.0.0"
+  "devDependencies": {
+    "cspell": "^8.17.0",
+    "markdownlint-cli2": "^0.17.0",
+    "prettier": "^3.4.0"
   }
 }

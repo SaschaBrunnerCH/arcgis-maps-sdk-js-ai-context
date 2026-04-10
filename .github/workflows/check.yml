@@ -1,0 +1,38 @@
+name: Check
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Spell check
+        run: npm run spellcheck
+
+      - name: Markdown lint
+        run: npm run lint:markdown
+
+      - name: Validate skills
+        run: npm run validate:skills
+
+      - name: Link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: "--no-progress --exclude-loopback '**/*.md'"
+          fail: true

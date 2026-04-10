@@ -1,0 +1,20 @@
+{
+  "name": "arcgis-maps-sdk-js-ai-context",
+  "description": "35 Agent Skills for ArcGIS Maps SDK for JavaScript (SDK 5.0) covering maps, layers, visualization, spatial analysis, widgets, editing, 3D, and more",
+  "version": "1.0.0",
+  "author": {
+    "name": "Sascha Brunner"
+  },
+  "homepage": "https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context",
+  "repository": "https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context",
+  "license": "MIT",
+  "keywords": [
+    "arcgis",
+    "esri",
+    "gis",
+    "maps",
+    "javascript",
+    "skills",
+    "agent-skills"
+  ]
+}

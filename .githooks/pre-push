@@ -1,0 +1,11 @@
+#!/bin/sh
+# Pre-push hook: run quality checks before pushing
+
+echo "Running pre-push checks..."
+
+npm run format:check || { echo "Format check failed. Run 'npm run format' to fix."; exit 1; }
+npm run spellcheck || { echo "Spell check failed. Fix spelling issues and try again."; exit 1; }
+npm run lint:markdown || { echo "Markdown lint failed. Fix issues and try again."; exit 1; }
+npm run validate:skills || { echo "Skill validation failed. Fix issues and try again."; exit 1; }
+
+echo "All pre-push checks passed."

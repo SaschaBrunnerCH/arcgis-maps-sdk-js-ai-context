@@ -3,129 +3,102 @@
 > [!CAUTION]
 > **This is work in progress and not yet tested extensively. Use at your own risk.**
 
-Install [Agent Skills](https://agentskills.io) for [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/) development. Compatible with Claude, VS Code, Cursor, and other AI agents.
-
-## Features
-
-- **Agent Skills**: Comprehensive skill files following the open [Agent Skills specification](https://agentskills.io/specification)
-- **Cross-platform AI support**: Works with Claude, VS Code Copilot, Cursor, OpenCode, and other compatible agents
-- **SDK Version Selection**: Choose skills for specific ArcGIS Maps SDK versions
-- **Cross-platform**: Works on Windows, macOS, and Linux
-- **Zero dependencies**: Uses only built-in Node.js modules
+[Agent Skills](https://agentskills.io) for [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/) (SDK 5.0). 35 skills covering maps, layers, visualization, spatial analysis, widgets, editing, 3D, and more.
 
 ## Installation
 
-No installation required! Run directly with npx:
+The simplest path works for every supported agent — use the [`skills` CLI](https://github.com/vercel-labs/skills):
 
 ```bash
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context <command>
+npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context
 ```
 
-## Commands
-
-### Install Agent Skills
-
-Installs Agent Skills directly to `.github/skills/` in your project (35 skills for SDK 5.0, 31 for SDK 4.34):
+It auto-detects which coding agents you have installed and copies the skills to the correct location for each. To target a specific agent, use `-a`:
 
 ```bash
-# Install for latest SDK version
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills
-
-# Install for specific SDK version
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills --sdk 4.34
+npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context -a claude-code
+npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context -a cursor
+npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context -a github-copilot
+npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context -a opencode
 ```
 
-This creates the following structure (all skills are prefixed with `arcgis-` to avoid conflicts with other packages):
-
-```
-your-project/
-└── .github/
-    └── skills/
-        ├── arcgis-starter-app/
-        │   └── SKILL.md
-        ├── arcgis-core-maps/
-        │   └── SKILL.md
-        ├── arcgis-layers/
-        │   └── SKILL.md
-        ├── arcgis-widgets-ui/
-        │   └── SKILL.md
-        └── ... (35 skill directories for SDK 5.0)
-```
-
-### List Available Skills
-
-Shows all available SDK versions and skills:
+Install individual skills instead of the full set:
 
 ```bash
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context list
+npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context/arcgis-starter-app
+npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context/arcgis-core-maps
 ```
 
-### Help
+### Native agent workflows
 
-```bash
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context --help
+Some agents ship first-party plugin marketplaces with a nicer in-agent UX than the CLI.
+
+#### Claude Code
+
+Register the marketplace, then install the plugin:
+
+```text
+/plugin marketplace add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context
+/plugin install arcgis-maps-sdk-js-ai-context@arcgis-maps-sdk-js-skills
 ```
 
-## SDK Version Selection
+#### Cursor
 
-Use the `--sdk` flag to install skills for a specific ArcGIS Maps SDK version:
+Cursor 2.5+ ships a [plugin marketplace](https://cursor.com/marketplace) and reads plugins from repos containing `.cursor-plugin/plugin.json` (which this repo provides). Install via **Cursor Settings → Plugins → Add plugin**, or browse [cursor.com/marketplace](https://cursor.com/marketplace). See the [Cursor plugin docs](https://cursor.com/docs/plugins) for details.
 
-```bash
-npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills --sdk 4.34
+If you prefer the CLI, `npx skills add SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context -a cursor` also works.
+
+#### VS Code with GitHub Copilot
+
+GitHub Copilot auto-discovers skills from `.github/skills/`, `.claude/skills/`, and `.agents/skills/` in your project (configurable via the `chat.skillsLocations` setting). Install via the Skills CLI above, or type `/skills` in Copilot Chat to open the **Configure Skills** menu.
+
+See [Use Agent Skills in VS Code](https://code.visualstudio.com/docs/copilot/customization/agent-skills) for details.
+
+### Manual install
+
+#### Codex
+
+Tell Codex:
+
+```text
+Fetch and follow instructions from https://raw.githubusercontent.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context/refs/heads/master/.codex/INSTALL.md
 ```
 
-Available versions can be viewed with the `list` command. If no version is specified, the latest available version is used.
+**Detailed docs:** [.codex/INSTALL.md](.codex/INSTALL.md)
 
-| SDK Version | Skills | Status |
-|-------------|--------|--------|
-| 5.0 | 35 | Available (latest) |
-| 4.34 | 31 | Available |
+#### OpenCode
 
-## Skills Included
+Tell OpenCode:
 
-The package includes 35 Agent Skills for SDK 5.0 (31 for SDK 4.34) covering:
+```text
+Fetch and follow instructions from https://raw.githubusercontent.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context/refs/heads/master/.opencode/INSTALL.md
+```
 
-| Skill | Description |
-|-------|-------------|
-| arcgis-starter-app | Scaffold TypeScript/Vite apps (minimal and production-ready setups) |
-| arcgis-core-maps | 2D and 3D map creation, views, navigation, arcgis-video |
-| arcgis-layers | FeatureLayer, TileLayer, GeoJSONLayer, and more |
-| arcgis-advanced-layers | WMS, WFS, WMTS, OGC, MapImageLayer, CatalogLayer, MediaLayer |
-| arcgis-visualization | Renderers, symbols, labels, and visual variables |
-| arcgis-smart-mapping | Smart mapping and data-driven visualization |
-| arcgis-popup-templates | Popup configuration and content |
-| arcgis-widgets-ui | Built-in widgets and UI components |
-| arcgis-widgets-advanced | BuildingExplorer, FloorFilter, Track, Locate, ScaleBar, and more |
-| arcgis-geometry-operations | Geometry operators and spatial operations |
-| arcgis-coordinates-projection | Coordinate systems and projections |
-| arcgis-spatial-analysis | Spatial analysis, feature reduction, and analysis objects |
-| arcgis-rest-services | REST service wrappers for routing, geocoding, printing, places |
-| arcgis-3d-layers | VoxelLayer, PointCloudLayer, glTF imports, 3D analysis components |
-| arcgis-scene-environment | SceneView environment, shadows, lighting, atmosphere |
-| arcgis-feature-effects | Feature effects, filters, and blend modes |
-| arcgis-cim-symbols | CIM symbol specification |
-| arcgis-arcade | Arcade expressions |
-| arcgis-time-animation | Time-aware layers and animation |
-| arcgis-editing | Editor widget, forms, subtypes, versioning |
-| arcgis-interaction | Hit testing, highlighting, sketching, and events |
-| arcgis-map-tools | Measurement, print, directions, and utility tools |
-| arcgis-tables-forms | Attribute tables and feature forms |
-| arcgis-custom-rendering | Custom WebGL rendering and LayerView architecture |
-| arcgis-imagery | Imagery and raster analysis |
-| arcgis-authentication | OAuth, API keys, and identity management |
-| arcgis-portal-content | Portal items, groups, and content management |
-| arcgis-knowledge-graphs | Knowledge graph integration and link charts |
-| arcgis-utility-networks | Utility network analysis |
-| arcgis-performance | Bundle optimization, lazy loading, memory management, view performance |
-| arcgis-ai-components | AI-powered map chat via `arcgis-ai-chat` and `arcgis-ai-toolbar` (5.0 only) |
-| arcgis-charts | Interactive charts from layer data via `@arcgis/charts-components` (5.0 only) |
-| arcgis-coding-components | Arcade expression editor via `@arcgis/coding-components` (5.0 only) |
-| arcgis-embeddable-maps | Lightweight self-contained map embeds via `@arcgis/embeddable-components` (5.0 only) |
-| arcgis-core-utilities | Accessor, Collection, reactiveUtils, intl, and workers |
+**Detailed docs:** [.opencode/INSTALL.md](.opencode/INSTALL.md)
 
-## Usage
+### Verify Installation
 
-After installing skills, your AI agent will automatically have access to ArcGIS-specific knowledge when working in your project. The skills provide:
+Start a new session in your agent and ask it to help with an ArcGIS Maps SDK task (for example, "create a map with a FeatureLayer"). The agent should automatically use the relevant ArcGIS skill.
+
+## Skills (35)
+
+See [skills/README.md](skills/README.md) for the full index by category.
+
+| Category      | Skills                                                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core          | `arcgis-core-maps`, `arcgis-starter-app`, `arcgis-core-utilities`, `arcgis-performance`                                                                                                     |
+| Layers & Data | `arcgis-layers`, `arcgis-advanced-layers`, `arcgis-3d-layers`, `arcgis-tables-forms`                                                                                                        |
+| Visualization | `arcgis-visualization`, `arcgis-cim-symbols`, `arcgis-smart-mapping`, `arcgis-feature-effects`                                                                                              |
+| Interaction   | `arcgis-interaction`, `arcgis-popup-templates`, `arcgis-editing`                                                                                                                            |
+| Widgets & UI  | `arcgis-widgets-ui`, `arcgis-widgets-advanced`                                                                                                                                              |
+| Spatial       | `arcgis-geometry-operations`, `arcgis-spatial-analysis`, `arcgis-coordinates-projection`                                                                                                    |
+| Services      | `arcgis-rest-services`, `arcgis-portal-content`, `arcgis-authentication`                                                                                                                    |
+| Specialized   | `arcgis-map-tools`, `arcgis-arcade`, `arcgis-imagery`, `arcgis-time-animation`, `arcgis-scene-environment`, `arcgis-utility-networks`, `arcgis-knowledge-graphs`, `arcgis-custom-rendering` |
+| New in 5.0    | `arcgis-ai-components`, `arcgis-charts`, `arcgis-coding-components`, `arcgis-embeddable-maps`                                                                                               |
+
+## What skills provide
+
+After installing, your AI agent automatically gets ArcGIS-specific knowledge:
 
 - Correct import patterns for ESM and Map Components
 - Best practices for TypeScript with autocasting
@@ -134,24 +107,45 @@ After installing skills, your AI agent will automatically have access to ArcGIS-
 - Common pitfalls and how to avoid them
 - Cross-references between related skills
 
-### Supported AI Agents
+## Supported AI Agents
 
+- [VS Code with GitHub Copilot](https://code.visualstudio.com/docs/copilot/customization/agent-skills)
 - [Claude](https://claude.ai/) / [Claude Code](https://claude.ai/claude-code)
-- [VS Code with Copilot](https://code.visualstudio.com/)
-- [Cursor](https://cursor.com/)
+- [Codex](https://openai.com/index/introducing-codex/)
 - [OpenCode](https://opencode.ai/)
+- [Cursor](https://cursor.com/)
 - Any agent supporting the [Agent Skills specification](https://agentskills.io)
 
-## Requirements
+## Updating
 
-- Node.js 14.0.0 or higher
+For Claude Code:
+
+```bash
+/plugin update arcgis-maps-sdk-js-ai-context
+```
+
+For Codex/OpenCode, pull the latest in the cloned directory:
+
+```bash
+git pull
+```
+
+For the Skills CLI, re-run the `npx skills add` command to get the latest version.
+
+## Legacy SDK 4.34
+
+Skills for SDK 4.34 are preserved on the [`sdk-4.34`](https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context/tree/sdk-4.34) branch. That branch includes the original CLI installer:
+
+```bash
+npx @saschabrunnerch/arcgis-maps-sdk-js-ai-context skills --sdk 4.34
+```
 
 ## Source
 
-The skills in this package are based on the official ArcGIS Maps SDK for JavaScript documentation:
+Skills are based on the official ArcGIS Maps SDK for JavaScript documentation:
 
-- **Documentation:** https://developers.arcgis.com/javascript/latest/downloads/
-- **Folders used:** `api-reference` and `sample-code` and `map-components`
+- **Documentation:** <https://developers.arcgis.com/javascript/latest/downloads/>
+- **Folders used:** `api-reference`, `sample-code`, and `map-components`
 
 ## AI Assistance Declaration
 
@@ -163,12 +157,11 @@ MIT
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues and pull requests at:
-
-https://github.com/SaschaBrunnerCH/arcgis-maps-sdk-js-ai-context
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## Related
 
 - [ArcGIS Maps SDK for JavaScript](https://developers.arcgis.com/javascript/)
 - [Agent Skills Specification](https://agentskills.io)
-- [Claude](https://claude.ai/)
+- [Skills CLI (vercel-labs/skills)](https://github.com/vercel-labs/skills)
+- [Anthropic Skills](https://github.com/anthropics/skills)
