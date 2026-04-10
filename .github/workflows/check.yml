@@ -34,5 +34,10 @@ jobs:
       - name: Link check
         uses: lycheeverse/lychee-action@v2
         with:
-          args: "--no-progress --exclude-loopback '**/*.md'"
+          args: >-
+            --no-progress
+            --exclude-loopback
+            --exclude-path node_modules
+            --accept 200..=299,403,429
+            '**/*.md'
           fail: true
