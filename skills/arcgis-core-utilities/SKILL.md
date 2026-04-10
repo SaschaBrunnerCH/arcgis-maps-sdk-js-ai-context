@@ -1,6 +1,6 @@
 ---
 name: arcgis-core-utilities
-description: Core utilities including Accessor pattern, Collection, reactiveUtils, promiseUtils, intl (internationalization), and workers. Use for reactive programming, property watching, locale formatting, async operations, and background processing.
+description: Core utilities including Accessor pattern, Collection, reactiveUtils, promiseUtils, esriRequest, intl (internationalization), and workers. Use for reactive programming, property watching, HTTP requests, locale formatting, async operations, and background processing.
 ---
 
 # ArcGIS Core Utilities
@@ -635,6 +635,86 @@ urlUtils.addProxyRule({
   urlPrefix: "https://services.arcgis.com",
   proxyUrl: "/proxy",
 });
+```
+
+## esriRequest
+
+HTTP client bundled with the SDK. Handles ArcGIS auth, proxy rules, and CORS automatically. Use it for anything that hits an ArcGIS REST endpoint and for generic HTTP where you want SDK-level auth/proxy handling.
+
+### Basic Request
+
+```javascript
+import esriRequest from "@arcgis/core/request.js";
+
+// GET request with JSON response
+const response = await esriRequest(url, {
+  query: { f: "json" },
+  responseType: "json",
+});
+
+console.log("Status:", response.httpStatus);
+console.log("Data:", response.data);
+```
+
+### Request with Options
+
+```javascript
+const response = await esriRequest(url, {
+  query: {
+    f: "json",
+    param1: "value1",
+  },
+  responseType: "json", // "json" | "text" | "array-buffer" | "blob" | "image" | "document" | "xml"
+  method: "post", // "auto" | "head" | "post"
+  body: formData, // For POST requests
+  timeout: 30000, // Timeout in ms
+  headers: {
+    "X-Custom-Header": "value",
+  },
+});
+```
+
+### Download Binary Data
+
+```javascript
+// Image response
+const imageResponse = await esriRequest(imageUrl, {
+  responseType: "image",
+});
+const imageElement = imageResponse.data;
+
+// Binary data
+const binaryResponse = await esriRequest(fileUrl, {
+  responseType: "array-buffer",
+});
+const arrayBuffer = binaryResponse.data;
+```
+
+### Abortable Requests
+
+Pair with an `AbortController` for cancellation — especially important for custom layers and debounced workflows. Use `promiseUtils.isAbortError` to distinguish user-cancelled from real errors.
+
+```javascript
+import esriRequest from "@arcgis/core/request.js";
+import * as promiseUtils from "@arcgis/core/core/promiseUtils.js";
+
+const controller = new AbortController();
+
+try {
+  const response = await esriRequest(url, {
+    responseType: "json",
+    signal: controller.signal,
+  });
+} catch (error) {
+  if (promiseUtils.isAbortError(error)) {
+    // Cancelled — expected, do nothing
+  } else {
+    throw error;
+  }
+}
+
+// Cancel the in-flight request
+controller.abort();
 ```
 
 ## Scheduling

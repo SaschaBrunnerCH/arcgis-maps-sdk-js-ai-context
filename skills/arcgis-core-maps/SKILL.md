@@ -377,6 +377,55 @@ const view = new SceneView({
 
 Available slots: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `top-start`, `top-end`, `bottom-start`, `bottom-end`
 
+## Component Attributes
+
+The `<arcgis-map>` / `<arcgis-scene>` components expose many declarative attributes beyond `basemap`, `center`, `zoom`. High-value ones:
+
+| Attribute                 | Type                  | Purpose                                                                                       |
+| ------------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
+| `item-id`                 | string                | Load a WebMap/WebScene from ArcGIS Online or Enterprise                                       |
+| `rotation`                | number                | Map rotation in degrees                                                                       |
+| `scale`                   | number                | Initial scale (e.g. `50000` for 1:50,000)                                                     |
+| `extent`                  | Extent (autocast)     | Initial visible extent                                                                        |
+| `viewpoint`               | Viewpoint (autocast)  | Combined center + scale + rotation                                                            |
+| `spatial-reference`       | SpatialReference      | Coordinate system (WKID)                                                                      |
+| `time-extent`             | TimeExtent            | Temporal filter for time-aware layers                                                         |
+| `animations-disabled`     | boolean               | Disable all `goTo` animations                                                                 |
+| `popup-disabled`          | boolean               | Disable the auto-popup on click                                                               |
+| `popup-component-enabled` | boolean               | Use the new Popup component (beta) instead of the widget                                      |
+| `auto-destroy-disabled`   | boolean               | Keep the view alive across unmount — **critical for React strict mode and SPA route changes** |
+| `attribution-mode`        | `"dark"` \| `"light"` | Attribution text theme                                                                        |
+| `hide-attribution`        | boolean               | Hide attribution (check the SDK license terms first)                                          |
+
+Some properties are only settable via JavaScript (not as attributes):
+
+| Property     | Type                 | Purpose                                                           |
+| ------------ | -------------------- | ----------------------------------------------------------------- |
+| `padding`    | ViewPadding          | Offset the UI logical area when side panels cover part of the map |
+| `theme`      | Theme                | Light / dark rendering theme                                      |
+| `background` | ColorBackground      | Background color for non-tiled regions                            |
+| `graphics`   | Collection<Graphic>  | View-level graphics, independent of any layer                     |
+| `highlights` | Collection           | Up to 6 highlight option sets for feature highlighting            |
+| `analyses`   | Collection<Analysis> | 3D analyses (line-of-sight, viewshed) — SceneView only            |
+| `aria`       | ARIAProperties       | Accessibility labels and descriptions                             |
+
+```html
+<!-- React / Vue / SPA pattern: keep view alive across unmount -->
+<arcgis-map
+  auto-destroy-disabled
+  basemap="topo-vector"
+  center="-118.24,34.05"
+  zoom="12"
+></arcgis-map>
+```
+
+```javascript
+// Layout: offset the UI when a 320px left sidebar covers part of the map
+const mapElement = document.querySelector("arcgis-map");
+await mapElement.viewOnReady();
+mapElement.padding = { left: 320 };
+```
+
 ## Map Properties
 
 | Property         | Type                  | Description                    |
@@ -389,6 +438,37 @@ Available slots: `top-left`, `top-right`, `bottom-left`, `bottom-right`, `top-st
 | `allTables`      | Collection (readonly) | Flattened table collection     |
 | `editableLayers` | Collection (readonly) | Layers that support editing    |
 | `focusAreas`     | Collection (readonly) | Focus areas for the map        |
+
+## Map Methods
+
+| Method                    | Returns | Purpose                                      |
+| ------------------------- | ------- | -------------------------------------------- |
+| `add(layer, index?)`      | void    | Add a layer, optionally at a specific index  |
+| `addMany(layers, index?)` | void    | Add multiple layers in one call              |
+| `remove(layer)`           | Layer   | Remove a single layer                        |
+| `removeMany(layers)`      | Layer[] | Remove multiple layers                       |
+| `removeAll()`             | Layer[] | Remove all operational layers                |
+| `reorder(layer, index?)`  | Layer   | Change layer draw order                      |
+| `findLayerById(id)`       | Layer   | Find a layer by its `id` property            |
+| `findTableById(id)`       | Layer   | Find a table by its `id` property            |
+| `destroy()`               | void    | Release the map, its layers, basemap, ground |
+
+```javascript
+// Add at a specific index (below existing layers)
+map.add(baseLayer, 0);
+
+// Batch add for initial setup
+map.addMany([featureLayer, graphicsLayer, imageryLayer]);
+
+// Reorder — move a layer to index 2
+map.reorder(roadsLayer, 2);
+
+// Lookup by ID (requires `id` to be set on the layer at creation)
+const roads = map.findLayerById("roads");
+if (roads) roads.visible = false;
+```
+
+> **Pattern:** A single `Map` instance can be shared across both a `MapView` (2D) and a `SceneView` (3D). User interaction happens on the view, not the map, so two views over the same map stay in sync for layers while maintaining independent camera/extent state.
 
 ## View Configuration
 
@@ -482,6 +562,32 @@ view.constraints = {
 
 ## Event Handling
 
+### Component Events
+
+Map Components fire DOM events on the `<arcgis-map>` / `<arcgis-scene>` element itself, prefixed with `arcgisView`. These mirror the view events but can be handled via `addEventListener` on the element — including _before_ the view is ready.
+
+```javascript
+const mapElement = document.querySelector("arcgis-map");
+
+// Alternative to awaiting viewOnReady()
+mapElement.addEventListener("arcgisViewReadyChange", () => {
+  if (mapElement.ready) {
+    const view = mapElement.view;
+    const map = mapElement.map;
+    // Safe to use view and map here
+  }
+});
+```
+
+**When to use which:**
+
+- **Component events** on the element — declarative, framework-friendly, work before the view is ready. Good for React/Vue patterns that want DOM-style event listeners.
+- **View events** via `view.on(...)` — imperative, return a handle for cleanup, work identically to Core API code.
+
+Most view events have a corresponding `arcgisView*` component event. See the [arcgis-map component reference](https://developers.arcgis.com/javascript/latest/references/map-components/components/arcgis-map/) for the full list.
+
+### View Events
+
 ```javascript
 // View ready
 view.when(() => {
@@ -558,57 +664,6 @@ reactiveUtils.watch(
 | `gray-vector`      | Light gray canvas          |
 | `osm`              | OpenStreetMap              |
 | `topo-3d`          | 3D topographic (SceneView) |
-
-## esriRequest (HTTP Requests)
-
-### Basic Request
-
-```javascript
-import esriRequest from "@arcgis/core/request.js";
-
-// GET request with JSON response
-const response = await esriRequest(url, {
-  query: { f: "json" },
-  responseType: "json",
-});
-
-console.log("Status:", response.httpStatus);
-console.log("Data:", response.data);
-```
-
-### Request with Options
-
-```javascript
-const response = await esriRequest(url, {
-  query: {
-    f: "json",
-    param1: "value1",
-  },
-  responseType: "json", // "json", "text", "array-buffer", "blob", "image"
-  method: "post", // "auto", "head", "post"
-  body: formData, // For POST requests
-  timeout: 30000, // Timeout in ms
-  headers: {
-    "X-Custom-Header": "value",
-  },
-});
-```
-
-### Download Binary Data
-
-```javascript
-// Image response
-const imageResponse = await esriRequest(imageUrl, {
-  responseType: "image",
-});
-const imageElement = imageResponse.data;
-
-// Binary data
-const binaryResponse = await esriRequest(fileUrl, {
-  responseType: "array-buffer",
-});
-const arrayBuffer = binaryResponse.data;
-```
 
 ## Planetary Visualization (Mars)
 
@@ -717,81 +772,6 @@ const arrayBuffer = binaryResponse.data;
 </script>
 ```
 
-## promiseUtils (Async Utilities)
-
-### Debounce
-
-```javascript
-import * as promiseUtils from "@arcgis/core/core/promiseUtils.js";
-
-// Create debounced function
-const debouncedUpdate = promiseUtils.debounce(async () => {
-  // This only runs after 300ms of no calls
-  await updateFeatures();
-});
-
-view.on("pointer-move", () => {
-  debouncedUpdate();
-});
-```
-
-### Abort Error Handling
-
-```javascript
-import * as promiseUtils from "@arcgis/core/core/promiseUtils.js";
-
-const abortController = new AbortController();
-
-try {
-  await someAsyncOperation({ signal: abortController.signal });
-} catch (error) {
-  if (promiseUtils.isAbortError(error)) {
-    // Operation was intentionally cancelled
-    console.log("Operation cancelled");
-  } else {
-    // Real error
-    throw error;
-  }
-}
-
-// Cancel the operation
-abortController.abort();
-```
-
-## reactiveUtils (Property Watching)
-
-### Watch Properties
-
-```javascript
-import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
-
-// Watch single property
-reactiveUtils.watch(
-  () => view.scale,
-  (scale) => console.log("Scale:", scale),
-);
-
-// Watch with initial value
-reactiveUtils.watch(
-  () => view.extent,
-  (extent) => console.log("Extent:", extent),
-  { initial: true },
-);
-
-// Watch once
-reactiveUtils
-  .once(() => view.stationary === true)
-  .then(() => {
-    console.log("View became stationary");
-  });
-
-// When condition becomes true
-reactiveUtils.when(
-  () => layer.loaded,
-  () => console.log("Layer loaded"),
-);
-```
-
 ## Reference Samples
 
 - `intro-mapview` - Basic MapView setup and configuration
@@ -892,8 +872,28 @@ reactiveUtils.when(
    ```
 
 5. **Script type**: Use `type="module"` for async/await support:
+
    ```html
    <script type="module">
      // async/await works here
    </script>
    ```
+
+6. **Layers belong to exactly one Map**: Adding a layer to a second `Map` silently removes it from the first.
+
+   ```javascript
+   // Anti-pattern: sharing a layer between two maps expecting both to display it
+   const layer = new FeatureLayer({ url: "..." });
+   const map1 = new Map({ layers: [layer] });
+   const map2 = new Map({ layers: [layer] }); // silently removes layer from map1
+   ```
+
+   ```javascript
+   // Correct: create two instances against the same data source
+   const layer1 = new FeatureLayer({ url: "..." });
+   const layer2 = new FeatureLayer({ url: "..." });
+   const map1 = new Map({ layers: [layer1] });
+   const map2 = new Map({ layers: [layer2] });
+   ```
+
+   **Impact:** The layer appears only in the most recently created map, with no error or warning. Common when toggling between 2D and 3D with separate map instances rather than sharing one map across two views.
